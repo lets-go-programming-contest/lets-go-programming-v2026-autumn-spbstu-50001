@@ -8,20 +8,20 @@ func main() {
 		operation                   string
 	)
 
-	_, error := fmt.Scanln(&firstOperand)
-	if error != nil {
+	_, err := fmt.Scanln(&firstOperand)
+	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
 
-	_, error = fmt.Scanln(&secondOperand)
-	if error != nil {
+	_, err = fmt.Scanln(&secondOperand)
+	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
 
-	_, error = fmt.Scanln(&operation)
-	if error != nil {
+	_, err = fmt.Scanln(&operation)
+	if err != nil {
 		fmt.Println("Invalid operation")
 		return
 	}
