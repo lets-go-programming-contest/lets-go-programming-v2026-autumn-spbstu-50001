@@ -33,13 +33,17 @@ func main() {
 			fmt.Println("Division by zero")
 			return
 		}
+		fmt.Println(firstOperand / secondOperand)
+
 	case "*":
 		fmt.Println(firstOperand * secondOperand)
 
 	case "+":
 		fmt.Println(firstOperand + secondOperand)
+
 	case "-":
 		fmt.Println(firstOperand - secondOperand)
+
 	default:
 		fmt.Println("Invalid operation")
 	}
