@@ -2,25 +2,29 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 func main() {
-	var input string
-	fmt.Scan(&input)
-	x, err := strconv.Atoi(input)
-	if input[0] == '0' || err != nil {
+	var x, y int
+	_, err := fmt.Scanln(&x)
+	if err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
-	fmt.Scan(&input)
-	y, err := strconv.Atoi(input)
-	if input[0] == '0' || err != nil {
+
+	_, err = fmt.Scanln(&y)
+	if err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
+
 	var operation string
-	fmt.Scan(&operation)
+	_, err = fmt.Scanln(&operation)
+	if err != nil {
+		fmt.Println("Invalid operation")
+		return
+	}
+
 	switch operation {
 	case "+":
 		fmt.Println(x + y)
