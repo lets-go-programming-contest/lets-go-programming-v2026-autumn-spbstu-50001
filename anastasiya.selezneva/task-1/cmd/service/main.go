@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 func main() {
-
 	var firstOperand, secondOperand int
 	var operator string
 
@@ -24,7 +23,7 @@ func main() {
 	_, err = fmt.Scanln(&operator)
 
 	if err != nil {
-		fmt.Println("Invalid operator")
+		fmt.Println("Invalid operation")
 		return
 	}
 
@@ -44,7 +43,7 @@ func main() {
 		}
 		result = firstOperand / secondOperand
 	default:
-		fmt.Println("Invalid operator")
+		fmt.Println("Invalid operation")
 		return
 	}
 
