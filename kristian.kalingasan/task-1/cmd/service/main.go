@@ -35,9 +35,10 @@ func main() {
 	case "/":
 		if y == 0 {
 			fmt.Println("Division by zero")
-		} else {
-			fmt.Println(x / y)
+			break
 		}
+		fmt.Println(x / y)
+
 	default:
 		fmt.Println("Invalid operation")
 	}
