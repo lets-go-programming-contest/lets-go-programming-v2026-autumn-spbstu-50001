@@ -1,5 +1,3 @@
-
-
 // Yaroslavsky Oleg 5130904 / 50001
 
 package main
@@ -31,7 +29,7 @@ func main() {
 		fmt.Println("Invalid operation")
 		return
 	}
-	
+
 	switch operation {
 	case "+":
 		fmt.Println(operand1 + operand2)
@@ -49,7 +47,4 @@ func main() {
 		fmt.Println("Invalid operation")
 	}
 
-
 }
-
-
