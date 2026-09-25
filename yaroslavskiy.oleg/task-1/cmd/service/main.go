@@ -2,9 +2,7 @@
 
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	var (
@@ -40,9 +38,9 @@ func main() {
 	case "/":
 		if operand2 == 0 {
 			fmt.Println("Division by zero")
-		} else {
-			fmt.Println(operand1 / operand2)
+			return
 		}
+		fmt.Println(operand1 / operand2)
 	default:
 		fmt.Println("Invalid operation")
 	}
