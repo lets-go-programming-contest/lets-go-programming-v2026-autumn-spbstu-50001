@@ -1,41 +1,25 @@
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-	"strconv"
-	"strings"
-)
+import "fmt"
 
 func main() {
-	input := bufio.NewScanner(os.Stdin)
+	var first, second int
+	var operation string
 
-	if !input.Scan() {
-		fmt.Println("Invalid first operand")
-		return
-	}
-	first, err := strconv.Atoi(strings.TrimSpace(input.Text()))
-	if err != nil {
+	if _, err := fmt.Scanln(&first); err != nil {
 		fmt.Println("Invalid first operand")
 		return
 	}
 
-	if !input.Scan() {
-		fmt.Println("Invalid second operand")
-		return
-	}
-	second, err := strconv.Atoi(strings.TrimSpace(input.Text()))
-	if err != nil {
+	if _, err := fmt.Scanln(&second); err != nil {
 		fmt.Println("Invalid second operand")
 		return
 	}
 
-	if !input.Scan() {
+	if _, err := fmt.Scanln(&operation); err != nil {
 		fmt.Println("Invalid operation")
 		return
 	}
-	operation := strings.TrimSpace(input.Text())
 
 	switch operation {
 	case "+":
