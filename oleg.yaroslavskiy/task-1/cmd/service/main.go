@@ -1,3 +1,4 @@
+
 package main
 
 import "fmt"
@@ -25,7 +26,6 @@ func main() {
 		fmt.Println("Invalid operation")
 		return
 	}
-
 
 	switch operation {
 	case "+":
