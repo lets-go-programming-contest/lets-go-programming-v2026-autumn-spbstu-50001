@@ -35,6 +35,7 @@ func (tb *TemperatureBounds) GetComfortTemp() int {
 	if tb.minTemp > tb.maxTemp {
 		return -1
 	}
+
 	return tb.minTemp
 }
 
@@ -44,7 +45,7 @@ func main() {
 		return
 	}
 
-	for deptIndex := 0; deptIndex < departmentsCount; deptIndex++ {
+	for range departmentsCount {
 		var employeesCount int
 		if _, err := fmt.Scan(&employeesCount); err != nil {
 			return
@@ -52,7 +53,7 @@ func main() {
 
 		bounds := NewTemperatureBounds()
 
-		for empIndex := 0; empIndex < employeesCount; empIndex++ {
+		for range employeesCount {
 			var (
 				operator   string
 				targetTemp int
