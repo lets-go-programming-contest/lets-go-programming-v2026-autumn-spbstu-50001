@@ -10,7 +10,7 @@ func ProcessRoom(employees int) error {
 		minTemp                = 15
 	)
 
-	for preference := range employees {
+	for range employees {
 		_, err := fmt.Scan(&sign)
 		if err != nil {
 			return fmt.Errorf("failed to scan sign: %w", err)
@@ -19,10 +19,6 @@ func ProcessRoom(employees int) error {
 		_, err = fmt.Scan(&preferredTemp)
 		if err != nil {
 			return fmt.Errorf("failed to scan temperature: %w", err)
-		}
-
-		if preference == 0 {
-			curTemp = preferredTemp
 		}
 
 		curTemp, maxTemp, minTemp = updateTemp(
