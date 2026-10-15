@@ -25,7 +25,6 @@ func main() {
 		}
 
 		temperature, err := climate.ProcessRoom(employeesInRoom)
-
 		if err != nil {
 			fmt.Println("Incorrect input")
 
