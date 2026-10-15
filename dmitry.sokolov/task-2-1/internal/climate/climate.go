@@ -3,7 +3,6 @@ package climate
 import "fmt"
 
 func ProcessRoom(employees int) (int, error) {
-
 	var (
 		sign                   string
 		curTemp, preferredTemp int
@@ -17,7 +16,7 @@ func ProcessRoom(employees int) (int, error) {
 		if err != nil {
 			fmt.Println("Incorrect input")
 
-			return curTemp, err
+			return curTemp, fmt.Errorf("Failed to scan sign: %w", err)
 		}
 
 		_, err = fmt.Scan(&preferredTemp)
@@ -25,7 +24,7 @@ func ProcessRoom(employees int) (int, error) {
 		if err != nil {
 			fmt.Println("Incorrect input")
 
-			return curTemp, err
+			return curTemp, fmt.Errorf("Failed to scan temperature: %w", err)
 		}
 
 		if preference == 0 {

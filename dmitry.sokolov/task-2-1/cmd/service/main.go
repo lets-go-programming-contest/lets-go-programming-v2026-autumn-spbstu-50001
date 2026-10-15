@@ -12,6 +12,7 @@ func main() {
 	_, err := fmt.Scan(&numberOfRooms)
 	if err != nil {
 		fmt.Println("Incorrect input")
+
 		return
 	}
 
@@ -19,6 +20,7 @@ func main() {
 		_, err = fmt.Scan(&employeesInRoom)
 		if err != nil {
 			fmt.Println("Incorrect input")
+
 			return
 		}
 
@@ -26,6 +28,7 @@ func main() {
 
 		if err != nil {
 			fmt.Println("Incorrect input")
+
 			return
 		}
 
