@@ -7,29 +7,28 @@ import (
 )
 
 func main() {
+	var numberOfRooms, employeesInRoom int
 
-	var n, k int
-
-	_, err := fmt.Scan(&n)
+	_, err := fmt.Scan(&numberOfRooms)
 	if err != nil {
 		fmt.Println("Incorrect input")
 		return
 	}
 
-	for i := 0; i < n; i++ {
-		_, err = fmt.Scan(&k)
+	for range numberOfRooms {
+		_, err = fmt.Scan(&employeesInRoom)
 		if err != nil {
 			fmt.Println("Incorrect input")
 			return
 		}
 
-		t, err := climate.ProcessRoom(k)
+		temperature, err := climate.ProcessRoom(employeesInRoom)
 
 		if err != nil {
 			fmt.Println("Incorrect input")
 			return
 		}
 
-		fmt.Println(t)
+		fmt.Println(temperature)
 	}
 }

@@ -2,29 +2,33 @@ package climate
 
 import "fmt"
 
-func ProcessRoom(k int) (int, error) {
+func ProcessRoom(employees int) (int, error) {
 
 	var (
 		sign                   string
 		curTemp, preferredTemp int
-		maxTemp                int = 30
-		minTemp                int = 15
+		maxTemp                = 30
+		minTemp                = 15
 	)
 
-	for j := range k {
+	for preference := range employees {
 		_, err := fmt.Scan(&sign)
+
 		if err != nil {
 			fmt.Println("Incorrect input")
+
 			return curTemp, err
 		}
 
 		_, err = fmt.Scan(&preferredTemp)
+
 		if err != nil {
 			fmt.Println("Incorrect input")
+
 			return curTemp, err
 		}
 
-		if j == 0 {
+		if preference == 0 {
 			curTemp = preferredTemp
 		}
 
@@ -52,5 +56,6 @@ func updateTemp(maxTemp int, minTemp int, curTemp int,
 	if curTemp < minTemp || curTemp > maxTemp {
 		curTemp = preferredTemp
 	}
+
 	return curTemp, maxTemp, minTemp
 }
