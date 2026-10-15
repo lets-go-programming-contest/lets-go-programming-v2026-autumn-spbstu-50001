@@ -24,13 +24,11 @@ func main() {
 			return
 		}
 
-		temperature, err := climate.ProcessRoom(employeesInRoom)
+		err := climate.ProcessRoom(employeesInRoom)
 		if err != nil {
 			fmt.Println("Incorrect input")
 
 			return
 		}
-
-		fmt.Println(temperature)
 	}
 }
