@@ -16,7 +16,7 @@ func ProcessRoom(employees int) (int, error) {
 		if err != nil {
 			fmt.Println("Incorrect input")
 
-			return curTemp, fmt.Errorf("Failed to scan sign: %w", err)
+			return curTemp, fmt.Errorf("failed to scan sign: %w", err)
 		}
 
 		_, err = fmt.Scan(&preferredTemp)
@@ -24,7 +24,7 @@ func ProcessRoom(employees int) (int, error) {
 		if err != nil {
 			fmt.Println("Incorrect input")
 
-			return curTemp, fmt.Errorf("Failed to scan temperature: %w", err)
+			return curTemp, fmt.Errorf("failed to scan temperature: %w", err)
 		}
 
 		if preference == 0 {
@@ -40,7 +40,6 @@ func ProcessRoom(employees int) (int, error) {
 
 func updateTemp(maxTemp int, minTemp int, curTemp int,
 	preferredTemp int, sign string) (int, int, int) {
-
 	switch sign {
 	case ">=":
 		minTemp = max(minTemp, preferredTemp)
