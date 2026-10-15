@@ -26,7 +26,7 @@ func ProcessRoom(employees int) error {
 		}
 
 		curTemp, maxTemp, minTemp = updateTemp(
-			maxTemp, minTemp, curTemp, preferredTemp, sign)
+			maxTemp, minTemp, preferredTemp, sign)
 
 		fmt.Println(curTemp)
 	}
@@ -34,7 +34,7 @@ func ProcessRoom(employees int) error {
 	return nil
 }
 
-func updateTemp(maxTemp int, minTemp int, curTemp int, preferredTemp int, sign string) (int, int, int) {
+func updateTemp(maxTemp int, minTemp int, preferredTemp int, sign string) (int, int, int) {
 	switch sign {
 	case ">=":
 		minTemp = max(minTemp, preferredTemp)
@@ -46,9 +46,5 @@ func updateTemp(maxTemp int, minTemp int, curTemp int, preferredTemp int, sign s
 		return -1, maxTemp, minTemp
 	}
 
-	if curTemp < minTemp || curTemp > maxTemp {
-		curTemp = preferredTemp
-	}
-
-	return curTemp, maxTemp, minTemp
+	return minTemp, maxTemp, minTemp
 }
