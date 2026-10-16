@@ -12,23 +12,24 @@ type temperatureBounds struct {
 	maxTemp int
 }
 
-func newTemperatureBounds(min, max int) temperatureBounds {
+func newTemperatureBounds(minValue, maxValue int) temperatureBounds {
 	return temperatureBounds{
-		minTemp: min,
-		maxTemp: max,
+		minTemp: minValue,
+		maxTemp: maxValue,
 	}
 }
 
 func (tb *temperatureBounds) updateBounds(operator string, targetTemp int) {
-	if operator == ">=" {
+	switch operator {
+	case ">=":
 		if targetTemp > tb.minTemp {
 			tb.minTemp = targetTemp
 		}
-	} else if operator == "<=" {
+	case "<=":
 		if targetTemp < tb.maxTemp {
 			tb.maxTemp = targetTemp
 		}
-	} else {
+	default:
 		fmt.Println("Предупреждение: неизвестный оператор:", operator)
 	}
 }
@@ -43,15 +44,19 @@ func (tb *temperatureBounds) getComfortTemp() (int, bool) {
 
 func main() {
 	var departmentsCount int
+
 	if _, err := fmt.Scan(&departmentsCount); err != nil {
 		fmt.Println("Ошибка чтения количества отделов:", err)
+
 		return
 	}
 
 	for range departmentsCount {
 		var employeesCount int
+
 		if _, err := fmt.Scan(&employeesCount); err != nil {
 			fmt.Println("Ошибка чтения количества сотрудников:", err)
+
 			return
 		}
 
@@ -65,6 +70,7 @@ func main() {
 
 			if _, err := fmt.Scan(&operator, &targetTemp); err != nil {
 				fmt.Println("Ошибка чтения данных сотрудника:", err)
+
 				return
 			}
 
