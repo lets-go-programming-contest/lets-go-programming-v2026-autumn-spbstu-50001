@@ -1,64 +1,97 @@
 package main
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
 	"os"
 )
 
-func main() {
-	in := bufio.NewReader(os.Stdin)
-	out := bufio.NewWriter(os.Stdout)
-	defer out.Flush()
+const (
+	minTemperature = 15
+	maxTemperature = 30
+)
 
+var errUnknownOperator = errors.New("unknown operator")
+
+type temperatureRange struct {
+	minTemp int
+	maxTemp int
+}
+
+func (bounds *temperatureRange) add(operator string, temperature int) error {
+	switch operator {
+	case ">=":
+		if temperature > bounds.minTemp {
+			bounds.minTemp = temperature
+		}
+	case "<=":
+		if temperature < bounds.maxTemp {
+			bounds.maxTemp = temperature
+		}
+	case "==":
+		if temperature > bounds.minTemp {
+			bounds.minTemp = temperature
+		}
+
+		if temperature < bounds.maxTemp {
+			bounds.maxTemp = temperature
+		}
+	default:
+		return fmt.Errorf("%w: %q", errUnknownOperator, operator)
+	}
+
+	return nil
+}
+
+func (bounds *temperatureRange) lowest() int {
+	if bounds.minTemp > bounds.maxTemp {
+		return -1
+	}
+
+	return bounds.minTemp
+}
+
+func processDepartment() error {
+	var employees int
+	if _, err := fmt.Scan(&employees); err != nil {
+		return fmt.Errorf("cannot read number of employees: %w", err)
+	}
+
+	bounds := temperatureRange{minTemp: minTemperature, maxTemp: maxTemperature}
+
+	for range employees {
+		var (
+			operator    string
+			temperature int
+		)
+
+		if _, err := fmt.Scan(&operator, &temperature); err != nil {
+			return fmt.Errorf("cannot read employee preference: %w", err)
+		}
+
+		if err := bounds.add(operator, temperature); err != nil {
+			return err
+		}
+
+		fmt.Println(bounds.lowest())
+	}
+
+	return nil
+}
+
+func main() {
 	var departments int
-	if _, err := fmt.Fscan(in, &departments); err != nil {
+	if _, err := fmt.Scan(&departments); err != nil {
 		fmt.Fprintln(os.Stderr, "cannot read number of departments:", err)
+
 		return
 	}
 
-	for i := 0; i < departments; i++ {
-		var employees int
-		if _, err := fmt.Fscan(in, &employees); err != nil {
-			fmt.Fprintln(os.Stderr, "cannot read number of employees:", err)
+	for range departments {
+		if err := processDepartment(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+
 			return
-		}
-
-		minTemp, maxTemp := 15, 30
-		for j := 0; j < employees; j++ {
-			var operator string
-			var temperature int
-			if _, err := fmt.Fscan(in, &operator, &temperature); err != nil {
-				fmt.Fprintln(os.Stderr, "cannot read employee preference:", err)
-				return
-			}
-
-			switch operator {
-			case ">=":
-				if temperature > minTemp {
-					minTemp = temperature
-				}
-			case "<=":
-				if temperature < maxTemp {
-					maxTemp = temperature
-				}
-			case "==":
-				if temperature > minTemp {
-					minTemp = temperature
-				}
-				if temperature < maxTemp {
-					maxTemp = temperature
-				}
-			default:
-				fmt.Fprintf(os.Stderr, "unknown operator: %q\n", operator)
-				return
-			}
-
-			if minTemp > maxTemp {
-				fmt.Fprintln(out, -1)
-			} else {
-				fmt.Fprintln(out, minTemp)
-			}
 		}
 	}
 }
