@@ -1,3 +1,4 @@
+```go
 package main
 
 import "fmt"
@@ -27,6 +28,7 @@ func (c *conditioner) addPreference(sign string, temperature int) bool {
 			c.high = temperature
 		}
 	default:
+
 		return false
 	}
 
@@ -35,6 +37,7 @@ func (c *conditioner) addPreference(sign string, temperature int) bool {
 
 func (c *conditioner) optimal() (int, bool) {
 	if c.low > c.high {
+
 		return 0, false
 	}
 
@@ -45,36 +48,43 @@ func main() {
 	var departmentsNum int
 	if _, err := fmt.Scan(&departmentsNum); err != nil {
 		fmt.Println("failed to read number of departments:", err)
+
 		return
 	}
 
-	for d := 0; d < departmentsNum; d++ {
+	for d := range departmentsNum {
 		var employeesNum int
 		if _, err := fmt.Scan(&employeesNum); err != nil {
 			fmt.Println("failed to read number of employees:", err)
+
 			return
 		}
 
-		c := newConditioner(minTemperature, maxTemperature)
+		conditioner := newConditioner(minTemperature, maxTemperature)
 
-		for i := 0; i < employeesNum; i++ {
+		for range employeesNum {
 			var (
 				sign        string
 				temperature int
 			)
-			if _, err := fmt.Scan(&sign, &temperature); err != nil {
+
+			_, err := fmt.Scan(&sign, &temperature)
+			if err != nil {
 				fmt.Println("failed to read preference:", err)
+
 				return
 			}
 
-			if !c.addPreference(sign, temperature) {
+			if !conditioner.addPreference(sign, temperature) {
 				fmt.Println("unknown sign:", sign)
+
 				return
 			}
 
-			temp, ok := c.optimal()
+			temp, ok := conditioner.optimal()
 			if !ok {
 				fmt.Println(-1)
+
 				continue
 			}
 
