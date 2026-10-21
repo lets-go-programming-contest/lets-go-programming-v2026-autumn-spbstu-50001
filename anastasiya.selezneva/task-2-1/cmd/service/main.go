@@ -1,4 +1,3 @@
-```go
 package main
 
 import "fmt"
@@ -52,7 +51,7 @@ func main() {
 		return
 	}
 
-	for d := range departmentsNum {
+	for range departmentsNum {
 		var employeesNum int
 		if _, err := fmt.Scan(&employeesNum); err != nil {
 			fmt.Println("failed to read number of employees:", err)
