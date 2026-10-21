@@ -27,7 +27,6 @@ func (c *conditioner) addPreference(sign string, temperature int) bool {
 			c.high = temperature
 		}
 	default:
-
 		return false
 	}
 
@@ -36,7 +35,6 @@ func (c *conditioner) addPreference(sign string, temperature int) bool {
 
 func (c *conditioner) optimal() (int, bool) {
 	if c.low > c.high {
-
 		return 0, false
 	}
 
