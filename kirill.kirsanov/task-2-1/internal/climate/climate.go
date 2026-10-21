@@ -14,7 +14,6 @@ type Constraint struct {
 
 func NewConstraint(cmp string, temp int) (Constraint, error) {
 	if cmp != ">=" && cmp != "<=" {
-
 		return Constraint{}, ErrInvalidOperator
 	}
 
