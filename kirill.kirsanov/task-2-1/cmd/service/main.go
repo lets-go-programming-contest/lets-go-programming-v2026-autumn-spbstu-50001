@@ -17,19 +17,20 @@ func main() {
 		return
 	}
 
-	for i := 0; i < n; i++ {
-		var k int
-		if _, err := fmt.Scan(&k); err != nil {
+	for range n {
+		var employeesCount int
+		if _, err := fmt.Scan(&employeesCount); err != nil {
 			return
 		}
 
 		currentRange := climate.NewTemperatureRange(minTemp, maxTemp)
 
-		for j := 0; j < k; j++ {
+		for range employeesCount {
 			var (
 				cmp  string
 				temp int
 			)
+
 			if _, err := fmt.Scan(&cmp, &temp); err != nil {
 				return
 			}
