@@ -50,6 +50,7 @@ func main() {
 
 			temps[index] = preferredTemp
 		}
+
 		minTemps := climate.CalculateClimateInRoom(signs, temps)
 
 		for _, val := range minTemps {
