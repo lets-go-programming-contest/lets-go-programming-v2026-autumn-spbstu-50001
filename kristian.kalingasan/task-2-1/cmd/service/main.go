@@ -41,7 +41,6 @@ func main() {
 	var departments int
 
 	_, err := fmt.Scan(&departments)
-
 	if err != nil {
 		fmt.Println("Invalid number of departments")
 
@@ -52,7 +51,6 @@ func main() {
 		var count int
 
 		_, err = fmt.Scan(&count)
-
 		if err != nil {
 			fmt.Println("Invalid number of employees")
 
@@ -68,7 +66,6 @@ func main() {
 			)
 
 			_, err = fmt.Scan(&operator, &value)
-
 			if err != nil {
 				fmt.Println("Invalid operator or value")
 
@@ -80,6 +77,7 @@ func main() {
 
 				return
 			}
+
 			if value > HIGH || value < LOW {
 				fmt.Println("Value is out of range")
 
