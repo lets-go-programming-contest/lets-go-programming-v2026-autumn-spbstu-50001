@@ -27,8 +27,8 @@ func main() {
 		var (
 			sign          string
 			preferredTemp int
-			signs         []string = make([]string, employeesInRoom)
-			temps         []int    = make([]int, employeesInRoom)
+			signs         = make([]string, employeesInRoom)
+			temps         = make([]int, employeesInRoom)
 		)
 
 		for index := range employeesInRoom {
@@ -38,6 +38,7 @@ func main() {
 
 				return
 			}
+
 			signs[index] = sign
 
 			_, err = fmt.Scan(&preferredTemp)
@@ -46,9 +47,10 @@ func main() {
 
 				return
 			}
+
 			temps[index] = preferredTemp
 		}
-		var minTemps []int = climate.CalculateClimateInRoom(signs, temps)
+		minTemps := climate.CalculateClimateInRoom(signs, temps)
 
 		for _, val := range minTemps {
 			fmt.Println(val)

@@ -18,7 +18,7 @@ func CalculateClimateInRoom(signs []string, vals []int) []int {
 		temperatures: make([]int, len(vals)),
 	}
 
-	for index := range len(signs) {
+	for index := range signs {
 		updateClimate(&climateInRoom, index, vals[index], signs[index])
 	}
 
@@ -32,7 +32,6 @@ func updateClimate(currClimate *climate, index int, preferredTemp int, sign stri
 	case "<=":
 		currClimate.maxTemp = min(currClimate.maxTemp, preferredTemp)
 	default:
-
 		return
 	}
 
