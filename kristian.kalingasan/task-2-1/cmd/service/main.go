@@ -11,21 +11,22 @@ func main() {
 
 	for range N {
 		var K int
-		low, high := 15, 30
 
 		_, _ = fmt.Scan(&K)
 
+		low, high := 15, 30
+
 		for range K {
 			var (
-				value int
-				op    string
+				value    int
+				operator string
 			)
 
-			_, _ = fmt.Scan(&op, &value)
+			_, _ = fmt.Scan(&operator, &value)
 
-			if op == ">=" && value > low {
+			if operator == ">=" && value > low {
 				low = value
-			} else if op == "<=" && value < high {
+			} else if operator == "<=" && value < high {
 				high = value
 			}
 
