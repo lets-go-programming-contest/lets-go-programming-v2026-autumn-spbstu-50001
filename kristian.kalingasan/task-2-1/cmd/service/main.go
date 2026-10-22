@@ -5,18 +5,18 @@ import (
 )
 
 func main() {
-	var N int
+	var departments int
 
-	_, _ = fmt.Scan(&N)
+	_, _ = fmt.Scan(&departments)
 
-	for range N {
-		var K int
+	for range departments {
+		var count int
 
-		_, _ = fmt.Scan(&K)
+		_, _ = fmt.Scan(&count)
 
 		low, high := 15, 30
 
-		for range K {
+		for range count {
 			var (
 				value    int
 				operator string
