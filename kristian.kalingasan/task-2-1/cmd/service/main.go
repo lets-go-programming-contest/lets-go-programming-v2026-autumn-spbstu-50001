@@ -15,6 +15,7 @@ func newConditioner() *Conditioner {
 		high: HIGH,
 	}
 }
+
 func (c *Conditioner) apply(operator string, value int) {
 	if operator == ">=" && value > c.low {
 		c.low = value
@@ -22,9 +23,11 @@ func (c *Conditioner) apply(operator string, value int) {
 		c.high = value
 	}
 }
+
 func (c *Conditioner) isValid() bool {
 	return c.low <= c.high
 }
+
 func (c *Conditioner) optimal() int {
 	return c.low
 }
@@ -41,6 +44,7 @@ func main() {
 
 	if err != nil {
 		fmt.Println("Invalid number of departments")
+
 		return
 	}
 
@@ -51,6 +55,7 @@ func main() {
 
 		if err != nil {
 			fmt.Println("Invalid number of employees")
+
 			return
 		}
 
@@ -66,15 +71,18 @@ func main() {
 
 			if err != nil {
 				fmt.Println("Invalid operator or value")
+
 				return
 			}
 
 			if !(operator == ">=" || operator == "<=") {
 				fmt.Println("Operator is not allowed")
+
 				return
 			}
 			if value > HIGH || value < LOW {
 				fmt.Println("Value is out of range")
+
 				return
 			}
 
