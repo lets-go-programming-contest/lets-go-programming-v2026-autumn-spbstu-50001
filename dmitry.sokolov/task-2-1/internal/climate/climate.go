@@ -1,46 +1,44 @@
 package climate
 
-import "fmt"
+const (
+	defaultMaxTemp = 30
+	defaultMinTemp = 15
+)
 
-func ProcessRoom(employees int) error {
-	var (
-		sign                   string
-		curTemp, preferredTemp int
-		maxTemp                = 30
-		minTemp                = 15
-	)
-
-	for range employees {
-		_, err := fmt.Scan(&sign)
-		if err != nil {
-			return fmt.Errorf("failed to scan sign: %w", err)
-		}
-
-		_, err = fmt.Scan(&preferredTemp)
-		if err != nil {
-			return fmt.Errorf("failed to scan temperature: %w", err)
-		}
-
-		curTemp, maxTemp, minTemp = updateTemp(
-			maxTemp, minTemp, preferredTemp, sign)
-
-		fmt.Println(curTemp)
-	}
-
-	return nil
+type climate struct {
+	maxTemp      int
+	minTemp      int
+	temperatures []int
 }
 
-func updateTemp(maxTemp int, minTemp int, preferredTemp int, sign string) (int, int, int) {
+func CalculateClimateInRoom(signs []string, vals []int) []int {
+	climateInRoom := climate{
+		maxTemp:      defaultMaxTemp,
+		minTemp:      defaultMinTemp,
+		temperatures: make([]int, len(vals)),
+	}
+
+	for index := range len(signs) {
+		updateClimate(&climateInRoom, index, vals[index], signs[index])
+	}
+
+	return climateInRoom.temperatures
+}
+
+func updateClimate(currClimate *climate, index int, preferredTemp int, sign string) {
 	switch sign {
 	case ">=":
-		minTemp = max(minTemp, preferredTemp)
+		currClimate.minTemp = max(currClimate.minTemp, preferredTemp)
 	case "<=":
-		maxTemp = min(maxTemp, preferredTemp)
+		currClimate.maxTemp = min(currClimate.maxTemp, preferredTemp)
+	default:
+
+		return
 	}
 
-	if minTemp > maxTemp {
-		return -1, maxTemp, minTemp
+	if currClimate.minTemp > currClimate.maxTemp {
+		currClimate.temperatures[index] = -1
+	} else {
+		currClimate.temperatures[index] = currClimate.minTemp
 	}
-
-	return minTemp, maxTemp, minTemp
 }
