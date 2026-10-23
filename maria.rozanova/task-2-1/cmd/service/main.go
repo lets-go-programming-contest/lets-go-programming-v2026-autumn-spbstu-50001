@@ -11,7 +11,7 @@ func main() {
 	var numDepart int
 
 	if _, err := fmt.Scan(&numDepart); err != nil {
-		fmt.Println("Ошибка! Количество отделов должно быть целым числом!")
+		fmt.Println("Error: number of departments must be an integer")
 
 		return
 	}
@@ -20,7 +20,7 @@ func main() {
 		var numEmployee int
 
 		if _, err := fmt.Scan(&numEmployee); err != nil {
-			fmt.Println("Ошибка! Количество работников должно быть целым числом!")
+			fmt.Println("Error: number of employees must be an integer")
 
 			return
 		}
@@ -34,7 +34,7 @@ func main() {
 			)
 
 			if _, err := fmt.Scan(&operator, &temp); err != nil {
-				fmt.Println("Ошибка ввода условия!")
+				fmt.Println("Error: invalid input format")
 
 				return
 			}
@@ -45,7 +45,7 @@ func main() {
 			case "<=":
 				maxtemp = min(maxtemp, temp)
 			default:
-				fmt.Println("Неизвестный оператор:", operator)
+				fmt.Println("Unknown operator:", operator)
 
 				return
 			}
