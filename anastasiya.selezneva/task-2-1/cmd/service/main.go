@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minTemperature = 15
@@ -16,7 +19,7 @@ func newConditioner(low, high int) conditioner {
 	return conditioner{low: low, high: high}
 }
 
-func (c *conditioner) addPreference(sign string, temperature int) bool {
+func (c *conditioner) addPreference(sign string, temperature int) error {
 	switch sign {
 	case ">=":
 		if temperature > c.low {
@@ -27,18 +30,20 @@ func (c *conditioner) addPreference(sign string, temperature int) bool {
 			c.high = temperature
 		}
 	default:
-		return false
+
+		return fmt.Errorf("unknown sign: %s", sign)
 	}
 
-	return true
+	return nil
 }
 
-func (c *conditioner) optimal() (int, bool) {
+func (c *conditioner) optimal() (int, error) {
 	if c.low > c.high {
-		return 0, false
+
+		return 0, errors.New("no optimal temperature")
 	}
 
-	return c.low, true
+	return c.low, nil
 }
 
 func main() {
@@ -72,14 +77,14 @@ func main() {
 				return
 			}
 
-			if !conditioner.addPreference(sign, temperature) {
-				fmt.Println("unknown sign:", sign)
+			if err = conditioner.addPreference(sign, temperature); err != nil {
+				fmt.Println(err)
 
 				return
 			}
 
-			temp, ok := conditioner.optimal()
-			if !ok {
+			temp, err := conditioner.optimal()
+			if err != nil {
 				fmt.Println(-1)
 
 				continue
