@@ -11,11 +11,18 @@ const (
 	maxTemperature = 30
 )
 
-var errUnknownOperator = errors.New("unknown operator")
+var (
+	errUnknownOperator = errors.New("unknown operator")
+	errNoTemperature   = errors.New("no suitable temperature")
+)
 
 type temperatureRange struct {
 	minTemp int
 	maxTemp int
+}
+
+func newTemperatureRange(minTemp, maxTemp int) temperatureRange {
+	return temperatureRange{minTemp: minTemp, maxTemp: maxTemp}
 }
 
 func (bounds *temperatureRange) add(operator string, temperature int) error {
@@ -28,14 +35,6 @@ func (bounds *temperatureRange) add(operator string, temperature int) error {
 		if temperature < bounds.maxTemp {
 			bounds.maxTemp = temperature
 		}
-	case "==":
-		if temperature > bounds.minTemp {
-			bounds.minTemp = temperature
-		}
-
-		if temperature < bounds.maxTemp {
-			bounds.maxTemp = temperature
-		}
 	default:
 		return fmt.Errorf("%w: %q", errUnknownOperator, operator)
 	}
@@ -43,12 +42,12 @@ func (bounds *temperatureRange) add(operator string, temperature int) error {
 	return nil
 }
 
-func (bounds *temperatureRange) lowest() int {
+func (bounds *temperatureRange) lowest() (int, error) {
 	if bounds.minTemp > bounds.maxTemp {
-		return -1
+		return 0, errNoTemperature
 	}
 
-	return bounds.minTemp
+	return bounds.minTemp, nil
 }
 
 func processDepartment() error {
@@ -57,7 +56,7 @@ func processDepartment() error {
 		return fmt.Errorf("cannot read number of employees: %w", err)
 	}
 
-	bounds := temperatureRange{minTemp: minTemperature, maxTemp: maxTemperature}
+	bounds := newTemperatureRange(minTemperature, maxTemperature)
 
 	for range employees {
 		var (
@@ -73,7 +72,14 @@ func processDepartment() error {
 			return err
 		}
 
-		fmt.Println(bounds.lowest())
+		suitableTemp, err := bounds.lowest()
+		if err != nil {
+			fmt.Println(-1)
+
+			continue
+		}
+
+		fmt.Println(suitableTemp)
 	}
 
 	return nil
