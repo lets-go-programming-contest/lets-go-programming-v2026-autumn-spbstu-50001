@@ -10,6 +10,11 @@ const (
 	maxTemperature = 30
 )
 
+var (
+	errUnknownSign          = errors.New("unknown sign")
+	errNoOptimalTemperature = errors.New("no optimal temperature")
+)
+
 type conditioner struct {
 	low  int
 	high int
@@ -30,8 +35,7 @@ func (c *conditioner) addPreference(sign string, temperature int) error {
 			c.high = temperature
 		}
 	default:
-
-		return fmt.Errorf("unknown sign: %s", sign)
+		return fmt.Errorf("%w: %s", errUnknownSign, sign)
 	}
 
 	return nil
@@ -39,8 +43,7 @@ func (c *conditioner) addPreference(sign string, temperature int) error {
 
 func (c *conditioner) optimal() (int, error) {
 	if c.low > c.high {
-
-		return 0, errors.New("no optimal temperature")
+		return 0, errNoOptimalTemperature
 	}
 
 	return c.low, nil
