@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	minimalTemperature = 15
@@ -15,6 +18,11 @@ const (
 	noSolution = -1
 )
 
+var (
+	errOutOfRange       = errors.New("value out of range")
+	errUnknownOperation = errors.New("unknown operation")
+)
+
 func readCount(name string, minValue, maxValue int) (int, error) {
 	var count int
 	if _, err := fmt.Scan(&count); err != nil {
@@ -22,7 +30,7 @@ func readCount(name string, minValue, maxValue int) (int, error) {
 	}
 
 	if count < minValue || count > maxValue {
-		return 0, fmt.Errorf("%s must be from %d to %d, got %d", name, minValue, maxValue, count)
+		return 0, fmt.Errorf("%s: %w (must be from %d to %d, got %d)", name, errOutOfRange, minValue, maxValue, count)
 	}
 
 	return count, nil
@@ -39,7 +47,7 @@ func narrowRange(low, high int, operation string, temperature int) (int, int, er
 			high = temperature
 		}
 	default:
-		return 0, 0, fmt.Errorf("unknown operation %q", operation)
+		return 0, 0, fmt.Errorf("%w: %q", errUnknownOperation, operation)
 	}
 
 	return low, high, nil
