@@ -7,6 +7,26 @@ const (
 	tmax = 30
 )
 
+type Conditioner struct {
+	low  int
+	high int
+}
+
+func (c *Conditioner) Apply(operator string, temp int) int {
+	switch operator {
+	case ">=":
+		c.low = max(c.low, temp)
+	case "<=":
+		c.high = min(c.high, temp)
+	}
+
+	if c.low > c.high {
+		return -1
+	}
+
+	return c.low
+}
+
 func main() {
 	var numDepart int
 
@@ -25,7 +45,7 @@ func main() {
 			return
 		}
 
-		mintemp, maxtemp := tmin, tmax
+		cond := Conditioner{low: tmin, high: tmax}
 
 		for range numEmployee {
 			var (
@@ -39,22 +59,7 @@ func main() {
 				return
 			}
 
-			switch operator {
-			case ">=":
-				mintemp = max(mintemp, temp)
-			case "<=":
-				maxtemp = min(maxtemp, temp)
-			default:
-				fmt.Println("Unknown operator:", operator)
-
-				return
-			}
-
-			if mintemp <= maxtemp {
-				fmt.Println(mintemp)
-			} else {
-				fmt.Println(-1)
-			}
+			fmt.Println(cond.Apply(operator, temp))
 		}
 	}
 }
