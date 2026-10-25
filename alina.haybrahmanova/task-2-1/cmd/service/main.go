@@ -20,44 +20,54 @@ func main() {
 	}
 
 	for range departmentsCount {
-		var employeesCount int
-		if _, err := fmt.Fscan(reader, &employeesCount); err != nil {
+		if err := processDepartment(reader, writer); err != nil {
 			return
 		}
+	}
+}
 
-		minTemp, maxTemp := 15, 30
-		isFailed := false
+func processDepartment(reader *bufio.Reader, writer *bufio.Writer) error {
+	var employeesCount int
+	if _, err := fmt.Fscan(reader, &employeesCount); err != nil {
+		return err
+	}
 
-		for range employeesCount {
-			var operator string
-			var temperature int
+	minTemp, maxTemp := 15, 30
+	isFailed := false
 
-			if _, err := fmt.Fscan(reader, &operator, &temperature); err != nil {
-				return
+	for range employeesCount {
+		var (
+			operator    string
+			temperature int
+		)
+
+		if _, err := fmt.Fscan(reader, &operator, &temperature); err != nil {
+			return err
+		}
+
+		if !isFailed {
+			switch operator {
+			case ">=":
+				if temperature > minTemp {
+					minTemp = temperature
+				}
+			case "<=":
+				if temperature < maxTemp {
+					maxTemp = temperature
+				}
 			}
 
-			if !isFailed {
-				switch operator {
-				case ">=":
-					if temperature > minTemp {
-						minTemp = temperature
-					}
-				case "<=":
-					if temperature < maxTemp {
-						maxTemp = temperature
-					}
-				}
-
-				if minTemp > maxTemp {
-					isFailed = true
-				}
-			}
-
-			if isFailed {
-				_, _ = fmt.Fprintln(writer, -1)
-			} else {
-				_, _ = fmt.Fprintln(writer, minTemp)
+			if minTemp > maxTemp {
+				isFailed = true
 			}
 		}
+
+		if isFailed {
+			_, _ = fmt.Fprintln(writer, -1)
+		} else {
+			_, _ = fmt.Fprintln(writer, minTemp)
+		}
 	}
+
+	return nil
 }
