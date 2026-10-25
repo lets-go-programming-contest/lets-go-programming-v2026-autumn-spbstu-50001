@@ -15,19 +15,21 @@ func main() {
 	var numberOfDepartments int
 	if _, err := fmt.Scan(&numberOfDepartments); err != nil {
 		fmt.Println("Invalid number of departments:", err)
+
 		return
 	}
 
-	for i := 0; i < numberOfDepartments; i++ {
+	for range numberOfDepartments {
 		var employeesCount int
 		if _, err := fmt.Scan(&employeesCount); err != nil {
 			fmt.Println("Invalid number of employees:", err)
+
 			return
 		}
 
 		tempRange := climate.NewTemperatureRange(initialMinTemp, initialMaxTemp)
 
-		for j := 0; j < employeesCount; j++ {
+		for range employeesCount {
 			var (
 				sign       string
 				limitValue int
@@ -35,21 +37,24 @@ func main() {
 
 			if _, err := fmt.Scan(&sign, &limitValue); err != nil {
 				fmt.Println("Invalid temperature condition:", err)
+
 				return
 			}
 
-			if sign == ">=" {
+			switch sign {
+			case ">=":
 				tempRange.SetMinLimit(limitValue)
-			} else if sign == "<=" {
+			case "<=":
 				tempRange.SetMaxLimit(limitValue)
-			} else {
+			default:
 				fmt.Println("Invalid operation sign")
+
 				return
 			}
 
 			optimal, err := tempRange.GetOptimalTemperature()
 			if err != nil {
-				fmt.Println(-1)
+				fmt.Println(-1) // Выводим -1 как требует условие задачи
 			} else {
 				fmt.Println(optimal)
 			}

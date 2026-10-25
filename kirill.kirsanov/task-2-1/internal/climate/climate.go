@@ -9,10 +9,10 @@ type TemperatureRange struct {
 	high int
 }
 
-func NewTemperatureRange(min, max int) TemperatureRange {
+func NewTemperatureRange(minVal, maxVal int) TemperatureRange {
 	return TemperatureRange{
-		low:  min,
-		high: max,
+		low:  minVal,
+		high: maxVal,
 	}
 }
 
@@ -32,5 +32,6 @@ func (r *TemperatureRange) GetOptimalTemperature() (int, error) {
 	if r.low > r.high {
 		return 0, ErrEmptyRange
 	}
+
 	return r.low, nil
 }
