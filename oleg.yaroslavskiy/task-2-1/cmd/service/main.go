@@ -10,17 +10,20 @@ const (
 	defaultMaxTemp = 30
 )
 
-var ErrNoComfortTemp = errors.New("no comfortable temperature")
+var (
+	ErrNoComfortTemp = errors.New("no comfortable temperature")
+	ErrUnknownOperator = errors.New("unknown operator")
+)
 
 type temperatureBounds struct {
 	minTemp int
 	maxTemp int
 }
 
-func newTemperatureBounds(min, max int) temperatureBounds {
+func newTemperatureBounds(lower, upper int) temperatureBounds {
 	return temperatureBounds{
-		minTemp: min,
-		maxTemp: max,
+		minTemp: lower,
+		maxTemp: upper,
 	}
 }
 
@@ -35,8 +38,9 @@ func (tb *temperatureBounds) updateBounds(operator string, targetTemp int) error
 			tb.maxTemp = targetTemp
 		}
 	default:
-		return fmt.Errorf("unknown operator: %s", operator)
+		return fmt.Errorf("%w: %s", ErrUnknownOperator, operator)
 	}
+
 	return nil
 }
 
@@ -44,6 +48,7 @@ func (tb *temperatureBounds) getComfortTemp() (int, error) {
 	if tb.minTemp > tb.maxTemp {
 		return 0, ErrNoComfortTemp
 	}
+
 	return tb.minTemp, nil
 }
 
@@ -51,6 +56,7 @@ func main() {
 	var departmentsCount int
 	if _, err := fmt.Scan(&departmentsCount); err != nil {
 		fmt.Println("Error reading departments count:", err)
+
 		return
 	}
 
@@ -58,6 +64,7 @@ func main() {
 		var employeesCount int
 		if _, err := fmt.Scan(&employeesCount); err != nil {
 			fmt.Println("Error reading employees count:", err)
+
 			return
 		}
 
@@ -71,11 +78,13 @@ func main() {
 
 			if _, err := fmt.Scan(&operator, &targetTemp); err != nil {
 				fmt.Println("Error reading employee data:", err)
+
 				return
 			}
 
 			if err := bounds.updateBounds(operator, targetTemp); err != nil {
 				fmt.Println("Error:", err)
+
 				return
 			}
 
