@@ -9,43 +9,54 @@ import (
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
-	defer writer.Flush()
 
-	var n int
-	if _, err := fmt.Fscan(reader, &n); err != nil {
+	defer func() {
+		_ = writer.Flush()
+	}()
+
+	var departmentsCount int
+	if _, err := fmt.Fscan(reader, &departmentsCount); err != nil {
 		return
 	}
 
-	for i := 0; i < n; i++ {
-		var k int
-		if _, err := fmt.Fscan(reader, &k); err != nil {
+	for range departmentsCount {
+		var employeesCount int
+		if _, err := fmt.Fscan(reader, &employeesCount); err != nil {
 			return
 		}
 
-		lo, hi := 15, 30
+		minTemp, maxTemp := 15, 30
+		isFailed := false
 
-		for j := 0; j < k; j++ {
-			var op string
-			var t int
-			if _, err := fmt.Fscan(reader, &op, &t); err != nil {
+		for range employeesCount {
+			var operator string
+			var temperature int
+
+			if _, err := fmt.Fscan(reader, &operator, &temperature); err != nil {
 				return
 			}
 
-			switch op {
-			case ">=":
-				if t > lo {
-					lo = t
+			if !isFailed {
+				switch operator {
+				case ">=":
+					if temperature > minTemp {
+						minTemp = temperature
+					}
+				case "<=":
+					if temperature < maxTemp {
+						maxTemp = temperature
+					}
 				}
-			case "<=":
-				if t < hi {
-					hi = t
+
+				if minTemp > maxTemp {
+					isFailed = true
 				}
 			}
 
-			if lo > hi {
-				fmt.Fprintln(writer, -1)
+			if isFailed {
+				_, _ = fmt.Fprintln(writer, -1)
 			} else {
-				fmt.Fprintln(writer, lo)
+				_, _ = fmt.Fprintln(writer, minTemp)
 			}
 		}
 	}
