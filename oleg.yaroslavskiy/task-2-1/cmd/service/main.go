@@ -1,25 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	defaultMinTemp = 15
 	defaultMaxTemp = 30
 )
 
+var ErrNoComfortTemp = errors.New("no comfortable temperature")
+
 type temperatureBounds struct {
 	minTemp int
 	maxTemp int
 }
 
-func newTemperatureBounds(minValue, maxValue int) temperatureBounds {
+func newTemperatureBounds(min, max int) temperatureBounds {
 	return temperatureBounds{
-		minTemp: minValue,
-		maxTemp: maxValue,
+		minTemp: min,
+		maxTemp: max,
 	}
 }
 
-func (tb *temperatureBounds) updateBounds(operator string, targetTemp int) {
+func (tb *temperatureBounds) updateBounds(operator string, targetTemp int) error {
 	switch operator {
 	case ">=":
 		if targetTemp > tb.minTemp {
@@ -30,33 +35,29 @@ func (tb *temperatureBounds) updateBounds(operator string, targetTemp int) {
 			tb.maxTemp = targetTemp
 		}
 	default:
-		fmt.Println("Предупреждение: неизвестный оператор:", operator)
+		return fmt.Errorf("unknown operator: %s", operator)
 	}
+	return nil
 }
 
-func (tb *temperatureBounds) getComfortTemp() (int, bool) {
+func (tb *temperatureBounds) getComfortTemp() (int, error) {
 	if tb.minTemp > tb.maxTemp {
-		return 0, false
+		return 0, ErrNoComfortTemp
 	}
-
-	return tb.minTemp, true
+	return tb.minTemp, nil
 }
 
 func main() {
 	var departmentsCount int
-
 	if _, err := fmt.Scan(&departmentsCount); err != nil {
-		fmt.Println("Ошибка чтения количества отделов:", err)
-
+		fmt.Println("Error reading departments count:", err)
 		return
 	}
 
 	for range departmentsCount {
 		var employeesCount int
-
 		if _, err := fmt.Scan(&employeesCount); err != nil {
-			fmt.Println("Ошибка чтения количества сотрудников:", err)
-
+			fmt.Println("Error reading employees count:", err)
 			return
 		}
 
@@ -69,17 +70,20 @@ func main() {
 			)
 
 			if _, err := fmt.Scan(&operator, &targetTemp); err != nil {
-				fmt.Println("Ошибка чтения данных сотрудника:", err)
-
+				fmt.Println("Error reading employee data:", err)
 				return
 			}
 
-			bounds.updateBounds(operator, targetTemp)
+			if err := bounds.updateBounds(operator, targetTemp); err != nil {
+				fmt.Println("Error:", err)
+				return
+			}
 
-			if temp, ok := bounds.getComfortTemp(); ok {
-				fmt.Println(temp)
+			temp, err := bounds.getComfortTemp()
+			if err != nil {
+				fmt.Println(-1)
 			} else {
-				fmt.Println("-1")
+				fmt.Println(temp)
 			}
 		}
 	}
