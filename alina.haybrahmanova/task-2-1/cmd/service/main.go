@@ -29,7 +29,7 @@ func main() {
 func processDepartment(reader *bufio.Reader, writer *bufio.Writer) error {
 	var employeesCount int
 	if _, err := fmt.Fscan(reader, &employeesCount); err != nil {
-		return err
+		return fmt.Errorf("failed to scan employees count: %w", err)
 	}
 
 	minTemp, maxTemp := 15, 30
@@ -42,7 +42,7 @@ func processDepartment(reader *bufio.Reader, writer *bufio.Writer) error {
 		)
 
 		if _, err := fmt.Fscan(reader, &operator, &temperature); err != nil {
-			return err
+			return fmt.Errorf("failed to scan employee preference: %w", err)
 		}
 
 		if !isFailed {
