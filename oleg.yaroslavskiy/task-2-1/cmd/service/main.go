@@ -11,7 +11,7 @@ const (
 )
 
 var (
-	ErrNoComfortTemp = errors.New("no comfortable temperature")
+	ErrNoComfortTemp   = errors.New("no comfortable temperature")
 	ErrUnknownOperator = errors.New("unknown operator")
 )
 
