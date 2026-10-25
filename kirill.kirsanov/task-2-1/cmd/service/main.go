@@ -7,42 +7,47 @@ import (
 )
 
 const (
-	minTemp = 15
-	maxTemp = 30
+	initialMinTemp = 15
+	initialMaxTemp = 30
 )
 
 func main() {
-	var n int
-	if _, err := fmt.Scan(&n); err != nil {
+	var numberOfDepartments int
+	if _, err := fmt.Scan(&numberOfDepartments); err != nil {
+		fmt.Println("Invalid number of departments:", err)
 		return
 	}
 
-	for range n {
+	for i := 0; i < numberOfDepartments; i++ {
 		var employeesCount int
 		if _, err := fmt.Scan(&employeesCount); err != nil {
+			fmt.Println("Invalid number of employees:", err)
 			return
 		}
 
-		currentRange := climate.NewTemperatureRange(minTemp, maxTemp)
+		tempRange := climate.NewTemperatureRange(initialMinTemp, initialMaxTemp)
 
-		for range employeesCount {
+		for j := 0; j < employeesCount; j++ {
 			var (
-				cmp  string
-				temp int
+				sign       string
+				limitValue int
 			)
 
-			if _, err := fmt.Scan(&cmp, &temp); err != nil {
+			if _, err := fmt.Scan(&sign, &limitValue); err != nil {
+				fmt.Println("Invalid temperature condition:", err)
 				return
 			}
 
-			constraint, err := climate.NewConstraint(cmp, temp)
-			if err != nil {
+			if sign == ">=" {
+				tempRange.SetMinLimit(limitValue)
+			} else if sign == "<=" {
+				tempRange.SetMaxLimit(limitValue)
+			} else {
+				fmt.Println("Invalid operation sign")
 				return
 			}
 
-			currentRange.Apply(constraint)
-
-			optimal, err := currentRange.GetOptimal()
+			optimal, err := tempRange.GetOptimalTemperature()
 			if err != nil {
 				fmt.Println(-1)
 			} else {
