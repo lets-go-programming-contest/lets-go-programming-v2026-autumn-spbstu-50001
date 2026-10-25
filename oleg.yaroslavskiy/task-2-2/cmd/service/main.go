@@ -52,7 +52,7 @@ func main() {
 	}
 
 	ratings := make([]int, dishesCount)
-	for i := 0; i < dishesCount; i++ {
+	for i := range dishesCount {
 		if _, err := fmt.Scan(&ratings[i]); err != nil {
 			fmt.Println("Error: invalid rating format")
 
