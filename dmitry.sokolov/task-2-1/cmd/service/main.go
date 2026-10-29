@@ -15,6 +15,7 @@ func main() {
 
 		return
 	}
+
 	if numberOfRooms < 0 {
 		fmt.Println("Incorrect input: number of rooms cannot be negative")
 
@@ -22,47 +23,20 @@ func main() {
 	}
 
 	for range numberOfRooms {
-		_, err = fmt.Scan(&employeesInRoom)
+		_, err := fmt.Scan(&employeesInRoom)
 		if err != nil {
 			fmt.Println("Incorrect input:", err)
 
 			return
 		}
+
 		if employeesInRoom < 0 {
-			fmt.Println("Incorrect input: there cannot be a negative number of employees in a room")
+			fmt.Println("Incorrect input: there cannot be a negative number of employees")
 
 			return
 		}
 
-		var (
-			sign          string
-			preferredTemp int
-			signs         = make([]string, employeesInRoom)
-			temps         = make([]int, employeesInRoom)
-			temperatures  = make([]int, employeesInRoom)
-		)
-
-		for index := range employeesInRoom {
-			_, err := fmt.Scan(&sign)
-			if err != nil {
-				fmt.Println("Incorrect input:", err)
-
-				return
-			}
-
-			signs[index] = sign
-
-			_, err = fmt.Scan(&preferredTemp)
-			if err != nil {
-				fmt.Println("Incorrect input:", err)
-
-				return
-			}
-
-			temps[index] = preferredTemp
-		}
-
-		temperatures, err = climate.CalculateClimateInRoom(signs, temps)
+		temperatures, err := readRoomDataAndCalculateClimate(employeesInRoom)
 
 		if err != nil {
 			fmt.Println("error while calculating temperature:", err)
@@ -74,4 +48,36 @@ func main() {
 			fmt.Println(val)
 		}
 	}
+}
+
+func readRoomDataAndCalculateClimate(employeesInRoom int) ([]int, error) {
+	var (
+		sign          string
+		preferredTemp int
+		signs         = make([]string, employeesInRoom)
+		temps         = make([]int, employeesInRoom)
+	)
+
+	for index := range employeesInRoom {
+		_, err := fmt.Scan(&sign)
+		if err != nil {
+			return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
+		}
+
+		signs[index] = sign
+
+		_, err = fmt.Scan(&preferredTemp)
+		if err != nil {
+			return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
+		}
+		temps[index] = preferredTemp
+	}
+
+	temperatures, err := climate.CalculateClimateInRoom(signs, temps)
+
+	if err != nil {
+		return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
+	}
+
+	return temperatures, nil
 }
