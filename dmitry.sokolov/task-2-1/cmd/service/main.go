@@ -37,7 +37,6 @@ func main() {
 		}
 
 		temperatures, err := readRoomDataAndCalculateClimate(employeesInRoom)
-
 		if err != nil {
 			fmt.Println("error while calculating temperature:", err)
 
@@ -70,11 +69,11 @@ func readRoomDataAndCalculateClimate(employeesInRoom int) ([]int, error) {
 		if err != nil {
 			return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
 		}
+
 		temps[index] = preferredTemp
 	}
 
 	temperatures, err := climate.CalculateClimateInRoom(signs, temps)
-
 	if err != nil {
 		return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
 	}

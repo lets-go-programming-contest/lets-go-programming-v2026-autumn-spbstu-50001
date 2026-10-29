@@ -34,7 +34,6 @@ func CalculateClimateInRoom(signs []string, vals []int) ([]int, error) {
 
 	for index := range signs {
 		err := updateClimate(&climateInRoom, index, vals[index], signs[index])
-
 		if err != nil {
 			return nil, fmt.Errorf("calculateClimateInRoom: %w", err)
 		}
