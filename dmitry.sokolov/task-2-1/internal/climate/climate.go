@@ -1,5 +1,10 @@
 package climate
 
+import (
+	"errors"
+	"fmt"
+)
+
 const (
 	defaultMaxTemp = 30
 	defaultMinTemp = 15
@@ -11,7 +16,16 @@ type climate struct {
 	temperatures []int
 }
 
-func CalculateClimateInRoom(signs []string, vals []int) []int {
+var (
+	ErrIncorrectSign = errors.New("incorrect sign")
+	ErrInvalidInput  = errors.New("signs and vals length differ")
+)
+
+func CalculateClimateInRoom(signs []string, vals []int) ([]int, error) {
+	if len(signs) != len(vals) {
+		return nil, ErrInvalidInput
+	}
+
 	climateInRoom := climate{
 		maxTemp:      defaultMaxTemp,
 		minTemp:      defaultMinTemp,
@@ -19,20 +33,25 @@ func CalculateClimateInRoom(signs []string, vals []int) []int {
 	}
 
 	for index := range signs {
-		updateClimate(&climateInRoom, index, vals[index], signs[index])
+		err := updateClimate(&climateInRoom, index, vals[index], signs[index])
+
+		if err != nil {
+
+			return nil, fmt.Errorf("calculateClimateInRoom: %w", err)
+		}
 	}
 
-	return climateInRoom.temperatures
+	return climateInRoom.temperatures, nil
 }
 
-func updateClimate(currClimate *climate, index int, preferredTemp int, sign string) {
+func updateClimate(currClimate *climate, index int, preferredTemp int, sign string) error {
 	switch sign {
 	case ">=":
 		currClimate.minTemp = max(currClimate.minTemp, preferredTemp)
 	case "<=":
 		currClimate.maxTemp = min(currClimate.maxTemp, preferredTemp)
 	default:
-		return
+		return ErrIncorrectSign
 	}
 
 	if currClimate.minTemp > currClimate.maxTemp {
@@ -40,4 +59,6 @@ func updateClimate(currClimate *climate, index int, preferredTemp int, sign stri
 	} else {
 		currClimate.temperatures[index] = currClimate.minTemp
 	}
+
+	return nil
 }

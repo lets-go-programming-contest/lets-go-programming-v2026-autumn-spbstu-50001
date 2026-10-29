@@ -10,16 +10,26 @@ func main() {
 	var numberOfRooms, employeesInRoom int
 
 	_, err := fmt.Scan(&numberOfRooms)
-	if err != nil || numberOfRooms < 0 {
-		fmt.Println("Incorrect input")
+	if err != nil {
+		fmt.Println("Incorrect input:", err)
+
+		return
+	}
+	if numberOfRooms < 0 {
+		fmt.Println("Incorrect input: number of rooms cannot be negative")
 
 		return
 	}
 
 	for range numberOfRooms {
 		_, err = fmt.Scan(&employeesInRoom)
-		if err != nil || employeesInRoom < 0 {
-			fmt.Println("Incorrect input")
+		if err != nil {
+			fmt.Println("Incorrect input:", err)
+
+			return
+		}
+		if employeesInRoom < 0 {
+			fmt.Println("Incorrect input: there cannot be a negative number of employees in a room")
 
 			return
 		}
@@ -29,12 +39,13 @@ func main() {
 			preferredTemp int
 			signs         = make([]string, employeesInRoom)
 			temps         = make([]int, employeesInRoom)
+			temperatures  = make([]int, employeesInRoom)
 		)
 
 		for index := range employeesInRoom {
 			_, err := fmt.Scan(&sign)
-			if err != nil || (sign != ">=" && sign != "<=") {
-				fmt.Println("Incorrect input")
+			if err != nil {
+				fmt.Println("Incorrect input:", err)
 
 				return
 			}
@@ -43,7 +54,7 @@ func main() {
 
 			_, err = fmt.Scan(&preferredTemp)
 			if err != nil {
-				fmt.Println("Incorrect input")
+				fmt.Println("Incorrect input:", err)
 
 				return
 			}
@@ -51,9 +62,15 @@ func main() {
 			temps[index] = preferredTemp
 		}
 
-		minTemps := climate.CalculateClimateInRoom(signs, temps)
+		temperatures, err = climate.CalculateClimateInRoom(signs, temps)
 
-		for _, val := range minTemps {
+		if err != nil {
+			fmt.Println("error while calculating temperature:", err)
+
+			return
+		}
+
+		for _, val := range temperatures {
 			fmt.Println(val)
 		}
 	}
