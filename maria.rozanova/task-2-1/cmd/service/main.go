@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -29,11 +28,11 @@ func (c *Conditioner) AddPreference(operator string, temp int) (int, error) {
 	case "<=":
 		c.high = min(c.high, temp)
 	default:
-		return 0, errors.New("unknown operator: " + operator)
+		return 0, fmt.Errorf("unknown operator: %s", operator)
 	}
 
 	if c.low > c.high {
-		return 0, errors.New("no valid temperature")
+		return 0, fmt.Errorf("no valid temperature")
 	}
 
 	return c.low, nil
