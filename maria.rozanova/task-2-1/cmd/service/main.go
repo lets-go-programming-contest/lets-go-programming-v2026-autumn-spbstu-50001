@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const (
 	tmin = 15
@@ -12,26 +15,35 @@ type Conditioner struct {
 	high int
 }
 
-func (c *Conditioner) Apply(operator string, temp int) int {
+func NewConditioner() *Conditioner {
+	return &Conditioner{
+		low:  tmin,
+		high: tmax,
+	}
+}
+
+func (c *Conditioner) AddPreference(operator string, temp int) (int, error) {
 	switch operator {
 	case ">=":
 		c.low = max(c.low, temp)
 	case "<=":
 		c.high = min(c.high, temp)
+	default:
+		return 0, errors.New("unknown operator: " + operator)
 	}
 
 	if c.low > c.high {
-		return -1
+		return 0, errors.New("no valid temperature")
 	}
 
-	return c.low
+	return c.low, nil
 }
 
 func main() {
 	var numDepart int
 
 	if _, err := fmt.Scan(&numDepart); err != nil {
-		fmt.Println("Error: number of departments must be an integer")
+		fmt.Println("Error reading number of departments:", err)
 
 		return
 	}
@@ -40,12 +52,12 @@ func main() {
 		var numEmployee int
 
 		if _, err := fmt.Scan(&numEmployee); err != nil {
-			fmt.Println("Error: number of employees must be an integer")
+			fmt.Println("Error reading number of employees:", err)
 
 			return
 		}
 
-		cond := Conditioner{low: tmin, high: tmax}
+		cond := NewConditioner()
 
 		for range numEmployee {
 			var (
@@ -54,12 +66,19 @@ func main() {
 			)
 
 			if _, err := fmt.Scan(&operator, &temp); err != nil {
-				fmt.Println("Error: invalid input format")
+				fmt.Println("Error reading preference:", err)
 
 				return
 			}
 
-			fmt.Println(cond.Apply(operator, temp))
+			result, err := cond.AddPreference(operator, temp)
+			if err != nil {
+				fmt.Println(-1)
+
+				continue
+			}
+
+			fmt.Println(result)
 		}
 	}
 }
