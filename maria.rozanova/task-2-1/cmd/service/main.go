@@ -1,12 +1,18 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
 const (
 	tmin = 15
 	tmax = 30
+)
+
+var (
+	ErrUnknownOperator = errors.New("unknown operator")
+	ErrNoValidTemp     = errors.New("no valid temperature")
 )
 
 type Conditioner struct {
@@ -28,11 +34,11 @@ func (c *Conditioner) AddPreference(operator string, temp int) (int, error) {
 	case "<=":
 		c.high = min(c.high, temp)
 	default:
-		return 0, fmt.Errorf("unknown operator: %s", operator)
+		return 0, fmt.Errorf("%w: %s", ErrUnknownOperator, operator)
 	}
 
 	if c.low > c.high {
-		return 0, fmt.Errorf("no valid temperature")
+		return 0, ErrNoValidTemp
 	}
 
 	return c.low, nil
