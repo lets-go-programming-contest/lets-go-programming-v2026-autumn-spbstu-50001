@@ -23,6 +23,43 @@ var (
 	errUnknownOperation = errors.New("unknown operation")
 )
 
+type temperatureState struct {
+	low  int
+	high int
+}
+
+func newTemperatureState() *temperatureState {
+	return &temperatureState{
+		low:  minimalTemperature,
+		high: maximumTemperature,
+	}
+}
+
+func (s *temperatureState) apply(operation string, temperature int) error {
+	switch operation {
+	case ">=":
+		if temperature > s.low {
+			s.low = temperature
+		}
+	case "<=":
+		if temperature < s.high {
+			s.high = temperature
+		}
+	default:
+		return fmt.Errorf("%w: %q", errUnknownOperation, operation)
+	}
+
+	return nil
+}
+
+func (s *temperatureState) optimalTemperature() int {
+	if s.low > s.high {
+		return noSolution
+	}
+
+	return s.low
+}
+
 func readCount(name string, minValue, maxValue int) (int, error) {
 	var count int
 	if _, err := fmt.Scan(&count); err != nil {
@@ -36,23 +73,6 @@ func readCount(name string, minValue, maxValue int) (int, error) {
 	return count, nil
 }
 
-func narrowRange(low, high int, operation string, temperature int) (int, int, error) {
-	switch operation {
-	case ">=":
-		if temperature > low {
-			low = temperature
-		}
-	case "<=":
-		if temperature < high {
-			high = temperature
-		}
-	default:
-		return 0, 0, fmt.Errorf("%w: %q", errUnknownOperation, operation)
-	}
-
-	return low, high, nil
-}
-
 func main() {
 	departmentsNumber, err := readCount("number of departments", minimalDepartments, maximumDepartments)
 	if err != nil {
@@ -61,40 +81,35 @@ func main() {
 		return
 	}
 
-	for department := 1; department <= departmentsNumber; department++ {
+	for department := 0; department < departmentsNumber; department++ {
 		employeesNumber, err := readCount("number of employees", minimalEmployees, maximumEmployees)
 		if err != nil {
-			fmt.Printf("department %d: %v\n", department, err)
+			fmt.Printf("department %d: %v\n", department+1, err)
 
 			return
 		}
 
-		low, high := minimalTemperature, maximumTemperature
+		state := newTemperatureState()
 
-		for employee := 1; employee <= employeesNumber; employee++ {
+		for employee := 0; employee < employeesNumber; employee++ {
 			var (
 				operation   string
 				temperature int
 			)
 
 			if _, err := fmt.Scan(&operation, &temperature); err != nil {
-				fmt.Printf("department %d, employee %d: failed to read preference: %v\n", department, employee, err)
+				fmt.Printf("department %d, employee %d: failed to read preference: %v\n", department+1, employee+1, err)
 
 				return
 			}
 
-			low, high, err = narrowRange(low, high, operation, temperature)
-			if err != nil {
-				fmt.Printf("department %d, employee %d: %v\n", department, employee, err)
+			if err := state.apply(operation, temperature); err != nil {
+				fmt.Printf("department %d, employee %d: %v\n", department+1, employee+1, err)
 
 				return
 			}
 
-			if low > high {
-				fmt.Println(noSolution)
-			} else {
-				fmt.Println(low)
-			}
+			fmt.Println(state.optimalTemperature())
 		}
 	}
 }
