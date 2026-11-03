@@ -81,7 +81,7 @@ func main() {
 		return
 	}
 
-	for department := 0; department < departmentsNumber; department++ {
+	for department := range departmentsNumber {
 		employeesNumber, err := readCount("number of employees", minimalEmployees, maximumEmployees)
 		if err != nil {
 			fmt.Printf("department %d: %v\n", department+1, err)
@@ -91,7 +91,7 @@ func main() {
 
 		state := newTemperatureState()
 
-		for employee := 0; employee < employeesNumber; employee++ {
+		for employee := range employeesNumber {
 			var (
 				operation   string
 				temperature int
