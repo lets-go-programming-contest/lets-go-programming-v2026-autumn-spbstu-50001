@@ -4,45 +4,54 @@ import (
 	"fmt"
 )
 
-type Conditioner struct {
+const (
+	minTemp = 15
+	maxTemp = 30
+)
+
+type conditioner struct {
 	low  int
 	high int
 }
 
-func newConditioner() *Conditioner {
-	return &Conditioner{
-		low:  LOW,
-		high: HIGH,
+func newConditioner(low, high int) *conditioner {
+	return &conditioner{
+		low:  low,
+		high: high,
 	}
 }
 
-func (c *Conditioner) apply(operator string, value int) {
-	if operator == ">=" && value > c.low {
-		c.low = value
-	} else if operator == "<=" && value < c.high {
-		c.high = value
+func (c *conditioner) apply(operator string, value int) error {
+	switch operator {
+	case ">=":
+		if value > c.low {
+			c.low = value
+		}
+	case "<=":
+		if value < c.high {
+			c.high = value
+		}
+	default:
+		return fmt.Errorf("operator is not allowed")
 	}
+
+	return nil
 }
 
-func (c *Conditioner) isValid() bool {
-	return c.low <= c.high
-}
+func (c *conditioner) optimal() (int, bool) {
+	if c.low > c.high {
+		return 0, false
+	}
 
-func (c *Conditioner) optimal() int {
-	return c.low
+	return c.low, true
 }
-
-const (
-	LOW  = 15
-	HIGH = 30
-)
 
 func main() {
 	var departments int
 
 	_, err := fmt.Scan(&departments)
 	if err != nil {
-		fmt.Println("Invalid number of departments")
+		fmt.Println("Invalid number of departments", err)
 
 		return
 	}
@@ -52,12 +61,12 @@ func main() {
 
 		_, err = fmt.Scan(&count)
 		if err != nil {
-			fmt.Println("Invalid number of employees")
+			fmt.Println("Invalid number of employees", err)
 
 			return
 		}
 
-		conditioner := newConditioner()
+		cond := newConditioner(minTemp, maxTemp)
 
 		for range count {
 			var (
@@ -67,29 +76,23 @@ func main() {
 
 			_, err = fmt.Scan(&operator, &value)
 			if err != nil {
-				fmt.Println("Invalid operator or value")
+				fmt.Println("Invalid operator or value", err)
 
 				return
 			}
 
-			if !(operator == ">=" || operator == "<=") {
-				fmt.Println("Operator is not allowed")
+			err = cond.apply(operator, value)
+			if err != nil {
+				fmt.Println(err)
 
 				return
 			}
 
-			if value > HIGH || value < LOW {
-				fmt.Println("Value is out of range")
-
-				return
-			}
-
-			conditioner.apply(operator, value)
-
-			if !conditioner.isValid() {
+			val, ok := cond.optimal()
+			if !ok {
 				fmt.Println(-1)
 			} else {
-				fmt.Println(conditioner.optimal())
+				fmt.Println(val)
 			}
 		}
 	}
