@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -8,6 +9,8 @@ const (
 	minTemp = 15
 	maxTemp = 30
 )
+
+var errInvalidOperator = errors.New("operator is not allowed")
 
 type conditioner struct {
 	low  int
@@ -32,7 +35,7 @@ func (c *conditioner) apply(operator string, value int) error {
 			c.high = value
 		}
 	default:
-		return fmt.Errorf("operator is not allowed")
+		return errInvalidOperator
 	}
 
 	return nil
