@@ -14,8 +14,8 @@ type conditioner struct {
 	high int
 }
 
-func newConditioner(low, high int) *conditioner {
-	return &conditioner{
+func newConditioner(low, high int) conditioner {
+	return conditioner{
 		low:  low,
 		high: high,
 	}
