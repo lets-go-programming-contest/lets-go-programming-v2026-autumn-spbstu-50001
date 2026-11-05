@@ -20,19 +20,19 @@ func main() {
 		panic("config path is required")
 	}
 
-	config, err := config.Load(*configPath)
+	cfg, err := config.Load(*configPath)
 	if err != nil {
 		panic(err)
 	}
 
-	currencies, err := currency.LoadXML(config.InputFile)
+	currencies, err := currency.LoadXML(cfg.InputFile)
 	if err != nil {
 		panic(err)
 	}
 
 	currency.SortByValueDescending(currencies)
 
-	if err := currency.SaveJSON(config.OutputFile, currencies); err != nil {
+	if err := currency.SaveJSON(cfg.OutputFile, currencies); err != nil {
 		panic(err)
 	}
 }
