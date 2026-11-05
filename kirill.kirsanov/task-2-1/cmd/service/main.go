@@ -54,7 +54,7 @@ func main() {
 
 			optimal, err := tempRange.GetOptimalTemperature()
 			if err != nil {
-				fmt.Println(-1) // Выводим -1 как требует условие задачи
+				fmt.Println(-1)
 			} else {
 				fmt.Println(optimal)
 			}

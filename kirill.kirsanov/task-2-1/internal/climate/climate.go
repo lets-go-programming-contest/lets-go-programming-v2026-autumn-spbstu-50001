@@ -2,35 +2,35 @@ package climate
 
 import "errors"
 
-var ErrEmptyRange = errors.New("temperature range is empty")
+var errEmptyRange = errors.New("temperature range is empty")
 
-type TemperatureRange struct {
+type temperatureRange struct {
 	low  int
 	high int
 }
 
-func NewTemperatureRange(minVal, maxVal int) TemperatureRange {
-	return TemperatureRange{
+func NewTemperatureRange(minVal, maxVal int) temperatureRange {
+	return temperatureRange{
 		low:  minVal,
 		high: maxVal,
 	}
 }
 
-func (r *TemperatureRange) SetMinLimit(value int) {
+func (r *temperatureRange) SetMinLimit(value int) {
 	if value > r.low {
 		r.low = value
 	}
 }
 
-func (r *TemperatureRange) SetMaxLimit(value int) {
+func (r *temperatureRange) SetMaxLimit(value int) {
 	if value < r.high {
 		r.high = value
 	}
 }
 
-func (r *TemperatureRange) GetOptimalTemperature() (int, error) {
+func (r *temperatureRange) GetOptimalTemperature() (int, error) {
 	if r.low > r.high {
-		return 0, ErrEmptyRange
+		return 0, errEmptyRange
 	}
 
 	return r.low, nil
