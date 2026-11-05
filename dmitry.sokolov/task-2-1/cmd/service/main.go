@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/dmitrys6/task-2-1/internal/climate"
@@ -54,11 +55,11 @@ func readRoomDataAndCalculateClimate(employeesInRoom int) error {
 	var (
 		sign          string
 		preferredTemp int
+		climateInRoom = climate.Climate{
+			MaxTemp: maxTemp,
+			MinTemp: minTemp,
+		}
 	)
-	climateInRoom := climate.Climate{
-		MaxTemp: maxTemp,
-		MinTemp: minTemp,
-	}
 
 	for range employeesInRoom {
 		_, err := fmt.Scan(&sign)
@@ -72,7 +73,7 @@ func readRoomDataAndCalculateClimate(employeesInRoom int) error {
 		}
 
 		err = climate.UpdateClimate(&climateInRoom, sign, preferredTemp)
-		if err == climate.ErrInvalidTemp {
+		if errors.Is(err, climate.ErrInvalidTemp) {
 			climateInRoom.MinTemp = -1
 		} else if err != nil {
 			return fmt.Errorf("calculateClimateInRooms: %w", err)
