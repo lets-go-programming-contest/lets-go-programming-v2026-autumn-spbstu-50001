@@ -13,28 +13,28 @@ var (
 	errOutputFileEmpty = errors.New("config field 'output-file' is empty")
 )
 
-type Config struct {
+type config struct {
 	InputFile  string `yaml:"input-file"`
 	OutputFile string `yaml:"output-file"`
 }
 
-func Load(path string) (Config, error) {
+func Load(path string) (config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return Config{}, fmt.Errorf("read config file %q: %w", path, err)
+		return config{}, fmt.Errorf("read config file %q: %w", path, err)
 	}
 
-	var cfg Config
+	var cfg config
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return Config{}, fmt.Errorf("parse config file %q: %w", path, err)
+		return config{}, fmt.Errorf("parse config file %q: %w", path, err)
 	}
 
 	if cfg.InputFile == "" {
-		return Config{}, errInputFileEmpty
+		return config{}, errInputFileEmpty
 	}
 
 	if cfg.OutputFile == "" {
-		return Config{}, errOutputFileEmpty
+		return config{}, errOutputFileEmpty
 	}
 
 	return cfg, nil

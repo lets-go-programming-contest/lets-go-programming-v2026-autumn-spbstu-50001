@@ -22,7 +22,7 @@ const (
 	windows1251Charset        = "windows-1251"
 )
 
-type Currency struct {
+type currency struct {
 	NumCode  int     `json:"num_code"`
 	CharCode string  `json:"char_code"`
 	Value    float64 `json:"value"`
@@ -38,7 +38,7 @@ type valute struct {
 	Value    string `xml:"Value"`
 }
 
-func LoadXML(path string) ([]Currency, error) {
+func LoadXML(path string) ([]currency, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("read XML file %q: %w", path, err)
@@ -52,7 +52,7 @@ func LoadXML(path string) ([]Currency, error) {
 		return nil, fmt.Errorf("decode XML file %q: %w", path, err)
 	}
 
-	currencies := make([]Currency, 0, len(rates.Valutes))
+	currencies := make([]currency, 0, len(rates.Valutes))
 
 	for _, item := range rates.Valutes {
 		rawNumCode := strings.TrimSpace(item.NumCode)
@@ -70,7 +70,7 @@ func LoadXML(path string) ([]Currency, error) {
 			return nil, err
 		}
 
-		currencies = append(currencies, Currency{
+		currencies = append(currencies, currency{
 			NumCode:  numCode,
 			CharCode: item.CharCode,
 			Value:    value,
@@ -80,13 +80,13 @@ func LoadXML(path string) ([]Currency, error) {
 	return currencies, nil
 }
 
-func SortByValueDescending(currencies []Currency) {
+func SortByValueDescending(currencies []currency) {
 	sort.Slice(currencies, func(i, j int) bool {
 		return currencies[i].Value > currencies[j].Value
 	})
 }
 
-func SaveJSON(path string, currencies []Currency) (err error) {
+func SaveJSON(path string, currencies []currency) (err error) {
 	if err := os.MkdirAll(filepath.Dir(path), outputDirectoryPermission); err != nil {
 		return fmt.Errorf("create output directory for %q: %w", path, err)
 	}
