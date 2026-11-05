@@ -6,6 +6,11 @@ import (
 	"github.com/dmitrys6/task-2-1/internal/climate"
 )
 
+const (
+	maxTemp = 30
+	minTemp = 15
+)
+
 func main() {
 	var numberOfRooms, employeesInRoom int
 
@@ -36,47 +41,45 @@ func main() {
 			return
 		}
 
-		temperatures, err := readRoomDataAndCalculateClimate(employeesInRoom)
+		err = readRoomDataAndCalculateClimate(employeesInRoom)
 		if err != nil {
 			fmt.Println("error while calculating temperature:", err)
 
 			return
 		}
-
-		for _, val := range temperatures {
-			fmt.Println(val)
-		}
 	}
 }
 
-func readRoomDataAndCalculateClimate(employeesInRoom int) ([]int, error) {
+func readRoomDataAndCalculateClimate(employeesInRoom int) error {
 	var (
 		sign          string
 		preferredTemp int
-		signs         = make([]string, employeesInRoom)
-		temps         = make([]int, employeesInRoom)
 	)
+	climateInRoom := climate.Climate{
+		MaxTemp: maxTemp,
+		MinTemp: minTemp,
+	}
 
-	for index := range employeesInRoom {
+	for range employeesInRoom {
 		_, err := fmt.Scan(&sign)
 		if err != nil {
-			return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
+			return fmt.Errorf("calculateClimateInRooms: %w", err)
 		}
-
-		signs[index] = sign
 
 		_, err = fmt.Scan(&preferredTemp)
 		if err != nil {
-			return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
+			return fmt.Errorf("calculateClimateInRooms: %w", err)
 		}
 
-		temps[index] = preferredTemp
+		err = climate.UpdateClimate(&climateInRoom, sign, preferredTemp)
+		if err == climate.ErrInvalidTemp {
+			climateInRoom.MinTemp = -1
+		} else if err != nil {
+			return fmt.Errorf("calculateClimateInRooms: %w", err)
+		}
+
+		fmt.Println(climateInRoom.MinTemp)
 	}
 
-	temperatures, err := climate.CalculateClimateInRoom(signs, temps)
-	if err != nil {
-		return nil, fmt.Errorf("calculateClimateInRooms: %w", err)
-	}
-
-	return temperatures, nil
+	return nil
 }
