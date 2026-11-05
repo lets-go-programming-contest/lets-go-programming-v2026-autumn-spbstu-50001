@@ -58,6 +58,7 @@ func LoadXML(path string) ([]Currency, error) {
 		rawNumCode := strings.TrimSpace(item.NumCode)
 
 		var numCode int
+
 		if rawNumCode != "" {
 			if numCode, err = strconv.Atoi(rawNumCode); err != nil {
 				return nil, fmt.Errorf("parse num code %q: %w", rawNumCode, err)
