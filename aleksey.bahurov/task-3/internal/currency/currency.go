@@ -16,10 +16,10 @@ import (
 )
 
 const (
-	floatBitSize       = 64
-	outputDirPerm      = 0o755
-	jsonIndent         = "  "
-	windows1251Charset = "windows-1251"
+	floatBitSize              = 64
+	outputDirectoryPermission = 0o755
+	jsonIndent                = "  "
+	windows1251Charset        = "windows-1251"
 )
 
 type Currency struct {
@@ -86,7 +86,7 @@ func SortByValueDescending(currencies []Currency) {
 }
 
 func SaveJSON(path string, currencies []Currency) (err error) {
-	if err := os.MkdirAll(filepath.Dir(path), outputDirPerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(path), outputDirectoryPermission); err != nil {
 		return fmt.Errorf("create output directory for %q: %w", path, err)
 	}
 
