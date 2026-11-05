@@ -1,73 +1,99 @@
 package main
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
-	"os"
 )
 
+const (
+	minTemp    = 15
+	maxTemp    = 30
+	noSolution = -1
+)
+
+var ErrUnknownOperator = errors.New("unknown operator")
+
+type Conditioner struct {
+	low  int
+	high int
+}
+
+func NewConditioner(low, high int) Conditioner {
+	return Conditioner{
+		low:  low,
+		high: high,
+	}
+}
+
+func (c *Conditioner) Apply(operator string, temp int) error {
+	switch operator {
+	case ">=":
+		if temp > c.low {
+			c.low = temp
+		}
+	case "<=":
+		if temp < c.high {
+			c.high = temp
+		}
+	default:
+		return fmt.Errorf("%w: %s", ErrUnknownOperator, operator)
+	}
+
+	return nil
+}
+
+func (c *Conditioner) Optimal() (int, bool) {
+	if c.low > c.high {
+		return 0, false
+	}
+
+	return c.low, true
+}
+
 func main() {
-	reader := bufio.NewReader(os.Stdin)
-	writer := bufio.NewWriter(os.Stdout)
-
-	defer func() {
-		_ = writer.Flush()
-	}()
-
 	var departmentsCount int
-	if _, err := fmt.Fscan(reader, &departmentsCount); err != nil {
+	if _, err := fmt.Scan(&departmentsCount); err != nil {
+		fmt.Println("Error reading departments count:", err)
+
 		return
 	}
 
 	for range departmentsCount {
-		if err := processDepartment(reader, writer); err != nil {
+		var employeesCount int
+		if _, err := fmt.Scan(&employeesCount); err != nil {
+			fmt.Println("Error reading employees count:", err)
+
 			return
 		}
-	}
-}
 
-func processDepartment(reader *bufio.Reader, writer *bufio.Writer) error {
-	var employeesCount int
-	if _, err := fmt.Fscan(reader, &employeesCount); err != nil {
-		return fmt.Errorf("failed to scan employees count: %w", err)
-	}
+		conditioner := NewConditioner(minTemp, maxTemp)
 
-	minTemp, maxTemp := 15, 30
-	isFailed := false
+		for range employeesCount {
+			var (
+				operator string
+				temp     int
+			)
 
-	for range employeesCount {
-		var (
-			operator    string
-			temperature int
-		)
+			if _, err := fmt.Scan(&operator, &temp); err != nil {
+				fmt.Println("Error reading employee preference:", err)
 
-		if _, err := fmt.Fscan(reader, &operator, &temperature); err != nil {
-			return fmt.Errorf("failed to scan employee preference: %w", err)
-		}
-
-		if !isFailed {
-			switch operator {
-			case ">=":
-				if temperature > minTemp {
-					minTemp = temperature
-				}
-			case "<=":
-				if temperature < maxTemp {
-					maxTemp = temperature
-				}
+				return
 			}
 
-			if minTemp > maxTemp {
-				isFailed = true
-			}
-		}
+			if err := conditioner.Apply(operator, temp); err != nil {
+				fmt.Println("Error applying employee preference:", err)
 
-		if isFailed {
-			_, _ = fmt.Fprintln(writer, -1)
-		} else {
-			_, _ = fmt.Fprintln(writer, minTemp)
+				return
+			}
+
+			result, ok := conditioner.Optimal()
+			if !ok {
+				fmt.Println(noSolution)
+
+				continue
+			}
+
+			fmt.Println(result)
 		}
 	}
-
-	return nil
 }
