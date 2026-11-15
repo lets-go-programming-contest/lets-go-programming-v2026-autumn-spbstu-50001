@@ -49,7 +49,10 @@ func (h *minHeap) SafePop() (int, error) {
 		return 0, ErrHeapIsEmpty
 	}
 
-	val := heap.Pop(h).(int)
+	val, ok := heap.Pop(h).(int)
+	if !ok {
+		return 0, ErrHeapIsEmpty
+	}
 
 	return val, nil
 }
