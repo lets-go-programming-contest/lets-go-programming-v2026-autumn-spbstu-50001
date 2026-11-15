@@ -9,6 +9,7 @@ import (
 var (
 	ErrDishesCount     = errors.New("invalid dishes count")
 	ErrPreferenceCount = errors.New("invalid preference number")
+	ErrHeapIsEmpty     = errors.New("cannot pop from an empty heap")
 )
 
 type minHeap []int
@@ -43,6 +44,16 @@ func (h *minHeap) Pop() any {
 	return lastElement
 }
 
+func (h *minHeap) SafePop() (int, error) {
+	if h.Len() == 0 {
+		return 0, ErrHeapIsEmpty
+	}
+
+	val := heap.Pop(h).(int)
+
+	return val, nil
+}
+
 func main() {
 	var dishesCount int
 	if _, err := fmt.Scan(&dishesCount); err != nil || dishesCount < 1 {
@@ -74,9 +85,21 @@ func main() {
 		heap.Push(dishHeap, rating)
 
 		if dishHeap.Len() > preference {
-			heap.Pop(dishHeap)
+			_, err := dishHeap.SafePop()
+			if err != nil {
+				fmt.Println("Error:", err)
+
+				return
+			}
 		}
 	}
 
-	fmt.Println((*dishHeap)[0])
+	result, err := dishHeap.SafePop()
+	if err != nil {
+		fmt.Println("Error:", err)
+
+		return
+	}
+
+	fmt.Println(result)
 }
