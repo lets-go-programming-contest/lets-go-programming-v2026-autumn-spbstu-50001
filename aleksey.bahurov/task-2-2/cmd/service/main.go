@@ -4,49 +4,15 @@ import (
 	"container/heap"
 	"errors"
 	"fmt"
+
+	"github.com/Alehandro-de-bah/task-2-2/internal/minheap"
 )
 
 var (
 	ErrDishesOutOfRange     = errors.New("number of dishes must be in range [1, 10000]")
-	ErrRatingOutOfRange     = errors.New("number of dishes must be in range [-10000, 10000]")
+	ErrRatingOutOfRange     = errors.New("rating of dish must be in range [-10000, 10000]")
 	ErrPreferenceOutOfRange = errors.New("preference number must be in range [1, dishesNumber]")
 )
-
-type minHeap []int
-
-func (h *minHeap) Len() int {
-	return len(*h)
-}
-
-func (h *minHeap) Less(i, j int) bool {
-	return (*h)[i] < (*h)[j]
-}
-
-func (h *minHeap) Swap(i, j int) {
-	(*h)[i], (*h)[j] = (*h)[j], (*h)[i]
-}
-
-func (h *minHeap) Push(x any) {
-	value, ok := x.(int)
-	if !ok {
-		return
-	}
-
-	*h = append(*h, value)
-}
-
-func (h *minHeap) Pop() any {
-	if len(*h) == 0 {
-		return nil
-	}
-
-	oldHeap := *h
-	oldLength := len(oldHeap)
-	lastElement := oldHeap[oldLength-1]
-	*h = oldHeap[0 : oldLength-1]
-
-	return lastElement
-}
 
 const (
 	minDishesNumber     = 1
@@ -120,7 +86,7 @@ func main() {
 		return
 	}
 
-	dishHeap := &minHeap{}
+	dishHeap := &minheap.MinHeap{}
 	heap.Init(dishHeap)
 
 	for _, value := range rating {
@@ -131,11 +97,11 @@ func main() {
 		}
 	}
 
-	if dishHeap.Len() > 0 {
-		fmt.Println((*dishHeap)[0])
+	if dishHeap.Len() == 0 {
+		fmt.Println("dishHeap is empty!")
 
 		return
 	}
 
-	fmt.Println("dishHeap is empty!")
+	fmt.Println((*dishHeap)[0])
 }
