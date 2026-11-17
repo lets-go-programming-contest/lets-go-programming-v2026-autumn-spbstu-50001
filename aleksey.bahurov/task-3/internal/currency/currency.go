@@ -22,20 +22,58 @@ const (
 	windows1251Charset        = "windows-1251"
 )
 
+type commaFloat float64
+
+func (cf *commaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var raw string
+	if err := d.DecodeElement(&raw, &start); err != nil {
+		return err
+	}
+
+	normalized := strings.ReplaceAll(strings.TrimSpace(raw), ",", ".")
+	val, err := strconv.ParseFloat(normalized, floatBitSize)
+	if err != nil {
+		return fmt.Errorf("parse float value %q: %w", raw, err)
+	}
+
+	*cf = commaFloat(val)
+
+	return nil
+}
+
+type optionalInt int
+
+func (oi *optionalInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	var raw string
+	if err := d.DecodeElement(&raw, &start); err != nil {
+		return err
+	}
+
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		*oi = 0
+
+		return nil
+	}
+
+	val, err := strconv.Atoi(trimmed)
+	if err != nil {
+		return fmt.Errorf("parse int value %q: %w", raw, err)
+	}
+
+	*oi = optionalInt(val)
+
+	return nil
+}
+
 type currency struct {
-	NumCode  int     `json:"num_code"`
-	CharCode string  `json:"char_code"`
-	Value    float64 `json:"value"`
+	NumCode  optionalInt `xml:"NumCode" json:"num_code"`
+	CharCode string      `xml:"CharCode" json:"char_code"`
+	Value    commaFloat  `xml:"Value" json:"value"`
 }
 
 type valCurs struct {
-	Valutes []valute `xml:"Valute"`
-}
-
-type valute struct {
-	NumCode  string `xml:"NumCode"`
-	CharCode string `xml:"CharCode"`
-	Value    string `xml:"Value"`
+	Valutes []currency `xml:"Valute"`
 }
 
 func LoadXML(path string) ([]currency, error) {
@@ -52,32 +90,7 @@ func LoadXML(path string) ([]currency, error) {
 		return nil, fmt.Errorf("decode XML file %q: %w", path, err)
 	}
 
-	currencies := make([]currency, 0, len(rates.Valutes))
-
-	for _, item := range rates.Valutes {
-		rawNumCode := strings.TrimSpace(item.NumCode)
-
-		var numCode int
-
-		if rawNumCode != "" {
-			if numCode, err = strconv.Atoi(rawNumCode); err != nil {
-				return nil, fmt.Errorf("parse num code %q: %w", rawNumCode, err)
-			}
-		}
-
-		value, err := parseValue(item.Value)
-		if err != nil {
-			return nil, err
-		}
-
-		currencies = append(currencies, currency{
-			NumCode:  numCode,
-			CharCode: item.CharCode,
-			Value:    value,
-		})
-	}
-
-	return currencies, nil
+	return rates.Valutes, nil
 }
 
 func SortByValueDescending(currencies []currency) {
