@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 
 	"github.com/Alehandro-de-bah/task-3/internal/config"
@@ -12,15 +13,26 @@ const (
 	configFlagUsage = "path to YAML configuration file"
 )
 
-func main() {
+var errConfigPathRequired = errors.New("config path is required")
+
+func parseFlags() (string, error) {
 	configPath := flag.String(configFlagName, "", configFlagUsage)
 	flag.Parse()
 
 	if *configPath == "" {
-		panic("config path is required")
+		return "", errConfigPathRequired
 	}
 
-	cfg, err := config.Load(*configPath)
+	return *configPath, nil
+}
+
+func main() {
+	configPath, err := parseFlags()
+	if err != nil {
+		panic(err)
+	}
+
+	cfg, err := config.Load(configPath)
 	if err != nil {
 		panic(err)
 	}
