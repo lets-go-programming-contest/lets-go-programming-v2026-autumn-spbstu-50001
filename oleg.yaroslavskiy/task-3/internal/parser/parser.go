@@ -60,10 +60,10 @@ func ConvertXMLToJSON(inputFile, outputFile string) error {
 
 	rates := make([]OutputRate, 0, len(curs.Valutes))
 
-	for _, v := range curs.Valutes {
-		numCodeStr := strings.TrimSpace(v.NumCode)
-		valueStr := strings.ReplaceAll(strings.TrimSpace(v.Value), ",", ".")
-		charCode := strings.TrimSpace(v.CharCode)
+	for _, valute := range curs.Valutes {
+		numCodeStr := strings.TrimSpace(valute.NumCode)
+		valueStr := strings.ReplaceAll(strings.TrimSpace(valute.Value), ",", ".")
+		charCode := strings.TrimSpace(valute.CharCode)
 
 		if numCodeStr == "" || valueStr == "" || charCode == "" {
 			continue
@@ -71,12 +71,12 @@ func ConvertXMLToJSON(inputFile, outputFile string) error {
 
 		numCode, err := strconv.Atoi(numCodeStr)
 		if err != nil {
-			return fmt.Errorf("parse num code %q: %w", v.NumCode, err)
+			return fmt.Errorf("parse num code %q: %w", valute.NumCode, err)
 		}
 
 		value, err := strconv.ParseFloat(valueStr, 64)
 		if err != nil {
-			return fmt.Errorf("parse value %q: %w", v.Value, err)
+			return fmt.Errorf("parse value %q: %w", valute.Value, err)
 		}
 
 		rates = append(rates, OutputRate{
