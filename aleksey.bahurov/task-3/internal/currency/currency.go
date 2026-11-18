@@ -27,8 +27,8 @@ func (cf *commaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 	}
 
 	normalized := strings.ReplaceAll(strings.TrimSpace(raw), ",", ".")
-	val, err := strconv.ParseFloat(normalized, floatBitSize)
 
+	val, err := strconv.ParseFloat(normalized, floatBitSize)
 	if err != nil {
 		return fmt.Errorf("parse float value %q: %w", raw, err)
 	}
