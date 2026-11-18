@@ -11,14 +11,26 @@ import (
 
 const outputDirectoryPermission = 0o755
 
+func closeFile(file *os.File) {
+	if err := file.Close(); err != nil {
+		panic(fmt.Errorf("close file %q: %w", file.Name(), err))
+	}
+}
+
 func LoadCurrenciesFromFile(path string) ([]currency.Currency, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open input file %q: %w", path, err)
 	}
-	defer file.Close()
 
-	return currency.DecodeXML(file)
+	defer closeFile(file)
+
+	currencies, err := currency.DecodeXML(file)
+	if err != nil {
+		return nil, fmt.Errorf("decode currencies from %q: %w", path, err)
+	}
+
+	return currencies, nil
 }
 
 func SaveToFile(path string, writeFunction func(io.Writer) error) error {
@@ -31,11 +43,7 @@ func SaveToFile(path string, writeFunction func(io.Writer) error) error {
 		return fmt.Errorf("create output file %q: %w", path, err)
 	}
 
-	defer func() {
-		if err := file.Close(); err != nil {
-			panic(fmt.Errorf("close output file %q: %w", path, err))
-		}
-	}()
+	defer closeFile(file)
 
 	return writeFunction(file)
 }

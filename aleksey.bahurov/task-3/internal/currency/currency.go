@@ -23,7 +23,7 @@ type commaFloat float64
 func (cf *commaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var raw string
 	if err := d.DecodeElement(&raw, &start); err != nil {
-		return err
+		return fmt.Errorf("decode float element: %w", err)
 	}
 
 	normalized := strings.ReplaceAll(strings.TrimSpace(raw), ",", ".")
@@ -42,7 +42,7 @@ type optionalInt int
 func (oi *optionalInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 	var raw string
 	if err := d.DecodeElement(&raw, &start); err != nil {
-		return err
+		return fmt.Errorf("decode int element: %w", err)
 	}
 
 	trimmed := strings.TrimSpace(raw)
@@ -63,9 +63,9 @@ func (oi *optionalInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 }
 
 type Currency struct {
-	NumCode  optionalInt `xml:"NumCode" json:"num_code"`
-	CharCode string      `xml:"CharCode" json:"char_code"`
-	Value    commaFloat  `xml:"Value" json:"value"`
+	NumCode  optionalInt `json:"num_code"  xml:"NumCode"`
+	CharCode string      `json:"char_code" xml:"CharCode"`
+	Value    commaFloat  `json:"value"     xml:"Value"`
 }
 
 type valCurs struct {
@@ -90,7 +90,7 @@ func SortByValueDescending(currencies []Currency) {
 	})
 }
 
-func EncodeJSON(w io.Writer, data any) (err error) {
+func EncodeJSON(w io.Writer, data any) error {
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", jsonIndent)
 
