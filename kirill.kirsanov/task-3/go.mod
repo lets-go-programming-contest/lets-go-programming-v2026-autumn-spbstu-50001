@@ -1,6 +1,6 @@
 module github.com/kirillkirsanov2007/task-3
 
-go 1.26.0
+go 1.22.7
 
 require gopkg.in/yaml.v3 v3.0.1
 
