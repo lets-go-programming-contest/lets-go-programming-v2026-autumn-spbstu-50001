@@ -61,33 +61,12 @@ func ConvertXMLToJSON(inputFile, outputFile string) error {
 	rates := make([]OutputRate, 0, len(curs.Valutes))
 
 	for _, valute := range curs.Valutes {
-		numCodeStr := strings.TrimSpace(valute.NumCode)
-		valueStr := strings.ReplaceAll(strings.TrimSpace(valute.Value), ",", ".")
-		charCode := strings.TrimSpace(valute.CharCode)
-
-		var numCode int
-		if numCodeStr != "" {
-			var err error
-			numCode, err = strconv.Atoi(numCodeStr)
-			if err != nil {
-				return fmt.Errorf("parse num code %q: %w", valute.NumCode, err)
-			}
+		rate, err := parseValute(valute)
+		if err != nil {
+			return err
 		}
 
-		var value float64
-		if valueStr != "" {
-			var err error
-			value, err = strconv.ParseFloat(valueStr, 64)
-			if err != nil {
-				return fmt.Errorf("parse value %q: %w", valute.Value, err)
-			}
-		}
-
-		rates = append(rates, OutputRate{
-			NumCode:  numCode,
-			CharCode: charCode,
-			Value:    value,
-		})
+		rates = append(rates, rate)
 	}
 
 	sort.Slice(rates, func(i, j int) bool {
@@ -99,6 +78,40 @@ func ConvertXMLToJSON(inputFile, outputFile string) error {
 	}
 
 	return nil
+}
+
+func parseValute(valute Valute) (OutputRate, error) {
+	numCodeStr := strings.TrimSpace(valute.NumCode)
+	valueStr := strings.ReplaceAll(strings.TrimSpace(valute.Value), ",", ".")
+	charCode := strings.TrimSpace(valute.CharCode)
+
+	var numCode int
+
+	if numCodeStr != "" {
+		parsedNum, err := strconv.Atoi(numCodeStr)
+		if err != nil {
+			return OutputRate{}, fmt.Errorf("parse num code %q: %w", valute.NumCode, err)
+		}
+
+		numCode = parsedNum
+	}
+
+	var value float64
+
+	if valueStr != "" {
+		parsedVal, err := strconv.ParseFloat(valueStr, 64)
+		if err != nil {
+			return OutputRate{}, fmt.Errorf("parse value %q: %w", valute.Value, err)
+		}
+
+		value = parsedVal
+	}
+
+	return OutputRate{
+		NumCode:  numCode,
+		CharCode: charCode,
+		Value:    value,
+	}, nil
 }
 
 func saveJSON(path string, rates []OutputRate) error {
