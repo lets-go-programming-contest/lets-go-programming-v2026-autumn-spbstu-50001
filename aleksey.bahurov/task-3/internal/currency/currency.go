@@ -1,13 +1,10 @@
 package currency
 
 import (
-	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,10 +13,9 @@ import (
 )
 
 const (
-	floatBitSize              = 64
-	outputDirectoryPermission = 0o755
-	jsonIndent                = "  "
-	windows1251Charset        = "windows-1251"
+	floatBitSize       = 64
+	jsonIndent         = "  "
+	windows1251Charset = "windows-1251"
 )
 
 type commaFloat float64
@@ -66,74 +62,43 @@ func (oi *optionalInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) erro
 	return nil
 }
 
-type currency struct {
+type Currency struct {
 	NumCode  optionalInt `xml:"NumCode" json:"num_code"`
 	CharCode string      `xml:"CharCode" json:"char_code"`
 	Value    commaFloat  `xml:"Value" json:"value"`
 }
 
 type valCurs struct {
-	Valutes []currency `xml:"Valute"`
+	Valutes []Currency `xml:"Valute"`
 }
 
-func LoadXML(path string) ([]currency, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read XML file %q: %w", path, err)
-	}
-
-	decoder := xml.NewDecoder(bytes.NewReader(data))
+func DecodeXML(r io.Reader) ([]Currency, error) {
+	decoder := xml.NewDecoder(r)
 	decoder.CharsetReader = xmlCharsetReader
 
 	var rates valCurs
 	if err := decoder.Decode(&rates); err != nil {
-		return nil, fmt.Errorf("decode XML file %q: %w", path, err)
+		return nil, fmt.Errorf("decode XML file: %w", err)
 	}
 
 	return rates.Valutes, nil
 }
 
-func SortByValueDescending(currencies []currency) {
+func SortByValueDescending(currencies []Currency) {
 	sort.Slice(currencies, func(i, j int) bool {
 		return currencies[i].Value > currencies[j].Value
 	})
 }
 
-func SaveJSON(path string, currencies []currency) (err error) {
-	if err := os.MkdirAll(filepath.Dir(path), outputDirectoryPermission); err != nil {
-		return fmt.Errorf("create output directory for %q: %w", path, err)
-	}
-
-	file, err := os.Create(path)
-	if err != nil {
-		return fmt.Errorf("create output file %q: %w", path, err)
-	}
-
-	defer func() {
-		if closeErr := file.Close(); closeErr != nil && err == nil {
-			err = fmt.Errorf("close output file %q: %w", path, closeErr)
-		}
-	}()
-
-	encoder := json.NewEncoder(file)
+func EncodeJSON(w io.Writer, data any) (err error) {
+	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", jsonIndent)
 
-	if err := encoder.Encode(currencies); err != nil {
-		return fmt.Errorf("encode JSON to %q: %w", path, err)
+	if err := encoder.Encode(data); err != nil {
+		return fmt.Errorf("encode JSON: %w", err)
 	}
 
 	return nil
-}
-
-func parseValue(strValue string) (float64, error) {
-	normalizedValue := strings.ReplaceAll(strings.TrimSpace(strValue), ",", ".")
-
-	value, err := strconv.ParseFloat(normalizedValue, floatBitSize)
-	if err != nil {
-		return 0, fmt.Errorf("parse value %q: %w", strValue, err)
-	}
-
-	return value, nil
 }
 
 func xmlCharsetReader(charset string, input io.Reader) (io.Reader, error) {
