@@ -22,14 +22,14 @@ const (
 type FloatValue float64
 
 func (f *FloatValue) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var v string
-	if err := d.DecodeElement(&v, &start); err != nil {
+	var stringValue string
+	if err := d.DecodeElement(&stringValue, &start); err != nil {
 		return fmt.Errorf("failed to decode XML element: %w", err)
 	}
 
-	v = strings.ReplaceAll(v, ",", ".")
+	stringValue = strings.ReplaceAll(stringValue, ",", ".")
 
-	val, err := strconv.ParseFloat(v, 64)
+	val, err := strconv.ParseFloat(stringValue, 64)
 	if err != nil {
 		return fmt.Errorf("failed to parse float: %w", err)
 	}
