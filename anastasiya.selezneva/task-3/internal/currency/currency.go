@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/seleznao/task-3/internal/decimal"
-
 	"golang.org/x/net/html/charset"
+
+	"github.com/seleznao/task-3/internal/decimal"
 )
 
 type Currency struct {
