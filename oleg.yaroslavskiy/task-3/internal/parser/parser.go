@@ -85,22 +85,26 @@ func parseValute(valute Valute) (OutputRate, error) {
 	valueStr := strings.ReplaceAll(strings.TrimSpace(valute.Value), ",", ".")
 	charCode := strings.TrimSpace(valute.CharCode)
 
-	if numCodeStr == "" {
-		return OutputRate{}, fmt.Errorf("empty num code for %q", charCode)
+	var numCode int
+
+	if numCodeStr != "" {
+		parsedNum, err := strconv.Atoi(numCodeStr)
+		if err != nil {
+			return OutputRate{}, fmt.Errorf("parse num code %q: %w", valute.NumCode, err)
+		}
+
+		numCode = parsedNum
 	}
 
-	if valueStr == "" {
-		return OutputRate{}, fmt.Errorf("empty value for %q", charCode)
-	}
+	var value float64
 
-	numCode, err := strconv.Atoi(numCodeStr)
-	if err != nil {
-		return OutputRate{}, fmt.Errorf("parse num code %q: %w", valute.NumCode, err)
-	}
+	if valueStr != "" {
+		parsedVal, err := strconv.ParseFloat(valueStr, 64)
+		if err != nil {
+			return OutputRate{}, fmt.Errorf("parse value %q: %w", valute.Value, err)
+		}
 
-	value, err := strconv.ParseFloat(valueStr, 64)
-	if err != nil {
-		return OutputRate{}, fmt.Errorf("parse value %q: %w", valute.Value, err)
+		value = parsedVal
 	}
 
 	return OutputRate{
