@@ -46,8 +46,8 @@ func ReadValCurs(inFile io.Reader) (valute.ValCurs, error) {
 	decoder.CharsetReader = charset.NewReaderLabel
 
 	var valCurs valute.ValCurs
-	err := decoder.Decode(&valCurs)
 
+	err := decoder.Decode(&valCurs)
 	if err != nil {
 		return valCurs, fmt.Errorf("ReadValCurs: %w", err)
 	}
@@ -57,7 +57,7 @@ func ReadValCurs(inFile io.Reader) (valute.ValCurs, error) {
 	}
 
 	for i, v := range valCurs.Valutes {
-		if v.NumCode <= 0 || strings.TrimSpace(v.CharCode) == "" || v.Value <= 0 {
+		if v.NumCode <= 0 || strings.TrimSpace(v.CharCode) == "" || v.Value < 0 {
 			return valCurs, fmt.Errorf("ReadValCurs: %w at index %d", ErrInvalidFields, i)
 		}
 	}

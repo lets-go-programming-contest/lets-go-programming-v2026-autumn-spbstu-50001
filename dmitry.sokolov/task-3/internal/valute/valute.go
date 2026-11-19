@@ -12,15 +12,14 @@ import (
 type CommaFloat float64
 
 func (f *CommaFloat) UnmarshalText(text []byte) error {
-	s := strings.Replace(strings.TrimSpace(string(text)), ",", ".", 1)
-	if s == "" {
+	trimmed := strings.Replace(strings.TrimSpace(string(text)), ",", ".", 1)
+	if trimmed == "" {
 		*f = 0
 
 		return nil
 	}
 
-	val, err := strconv.ParseFloat(s, 64)
-
+	val, err := strconv.ParseFloat(trimmed, 64)
 	if err != nil {
 		return fmt.Errorf("UnmarshalText CommaFloat: %w", err)
 	}

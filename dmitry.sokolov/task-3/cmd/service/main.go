@@ -12,6 +12,8 @@ import (
 	"github.com/dmitrys6/task-3/internal/valute"
 )
 
+const dirPerm = 0o755
+
 func main() {
 	configPath := flag.String("config", "config.yml", "config file path")
 	flag.Parse()
@@ -38,40 +40,50 @@ func main() {
 	}
 }
 
-func openAndReadIOFiles(filename string) (config.IOFiles, error) {
-	var inOutFiles config.IOFiles
-
+func openAndReadIOFiles(filename string) (inOutFiles config.IOFiles, err error) {
 	data, err := os.Open(filename)
 	if err != nil {
 		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", err)
 	}
 
-	defer data.Close()
+	defer func() {
+		if closeErr := data.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("openAndReadIOFiles: close file: %w", closeErr)
+		}
+	}()
 
 	inOutFiles, err = config.GetIOFiles(data)
+	if err != nil {
+		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", err)
+	}
 
-	return inOutFiles, err
+	return inOutFiles, nil
 }
 
-func openAndReadValCurs(filename string) (valute.ValCurs, error) {
-	var valCurs valute.ValCurs
-
+func openAndReadValCurs(filename string) (valCurs valute.ValCurs, err error) {
 	inFile, err := os.Open(filename)
 	if err != nil {
 		return valCurs, fmt.Errorf("openAndReadValCurs: %w", err)
 	}
 
-	defer inFile.Close()
+	defer func() {
+		if closeErr := inFile.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("openAndReadValCurs: close file: %w", closeErr)
+		}
+	}()
 
 	valCurs, err = config.ReadValCurs(inFile)
+	if err != nil {
+		return valCurs, fmt.Errorf("openAndReadValCurs: %w", err)
+	}
 
-	return valCurs, err
+	return valCurs, nil
 }
 
-func writeValCurs(filename string, valCurs *valute.ValCurs) error {
+func writeValCurs(filename string, valCurs *valute.ValCurs) (err error) {
 	dir := filepath.Dir(filename)
-	err := os.MkdirAll(dir, 0o755)
 
+	err = os.MkdirAll(dir, dirPerm)
 	if err != nil {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
@@ -89,10 +101,11 @@ func writeValCurs(filename string, valCurs *valute.ValCurs) error {
 
 	encoder := json.NewEncoder(outFile)
 	encoder.SetIndent("", "    ")
-	err = encoder.Encode(valCurs.Valutes)
 
+	err = encoder.Encode(valCurs.Valutes)
 	if err != nil {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
+
 	return err
 }
