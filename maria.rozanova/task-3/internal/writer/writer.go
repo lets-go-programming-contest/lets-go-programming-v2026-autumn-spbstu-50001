@@ -1,4 +1,3 @@
-// Package writer saves the result of the program as JSON.
 package writer
 
 import (

@@ -9,9 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"golang.org/x/text/encoding/charmap"
-
 	"github.com/mrzls/task-3/internal/model"
+	"golang.org/x/text/encoding/charmap"
 )
 
 const windows1251 = "windows-1251"

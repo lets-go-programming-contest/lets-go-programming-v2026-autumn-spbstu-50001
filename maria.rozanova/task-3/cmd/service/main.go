@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 
 	"github.com/mrzls/task-3/internal/model"
 	"github.com/mrzls/task-3/internal/reader"
@@ -28,15 +29,15 @@ func run() error {
 
 	cfg, err := settings.Read(*configPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("read settings: %w", err)
 	}
 
 	rates, err := reader.ReadXML(cfg.InputFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("read xml: %w", err)
 	}
 
 	model.SortByValueDesc(rates)
 
-	return writer.WriteJSON(cfg.OutputFile, rates)
+	return fmt.Errorf("write json: %w", writer.WriteJSON(cfg.OutputFile, rates))
 }
