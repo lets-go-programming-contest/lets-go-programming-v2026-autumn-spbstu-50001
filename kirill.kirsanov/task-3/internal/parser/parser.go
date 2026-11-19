@@ -8,12 +8,20 @@ import (
 	"strings"
 
 	"golang.org/x/text/encoding/charmap"
-
-	"github.com/kirillkirsanov2007/task-3/internal/dto"
 )
 
-func ReadXML(path string) (dto.ValCurs, error) {
-	var valCurs dto.ValCurs
+type ValCurs struct {
+	Valutes []Valute `xml:"Valute"`
+}
+
+type Valute struct {
+	NumCode  int     `xml:"NumCode"`
+	CharCode string  `xml:"CharCode"`
+	Value    float64 `xml:"Value"`
+}
+
+func ReadXML(path string) (ValCurs, error) {
+	var valCurs ValCurs
 
 	data, err := os.ReadFile(path)
 	if err != nil {

@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/kirillkirsanov2007/task-3/internal/dto"
 	"github.com/kirillkirsanov2007/task-3/internal/parser"
 )
 
@@ -31,13 +30,13 @@ func ProcessData(inputFile, outputFile string) error {
 	return nil
 }
 
-func sortData(valCurs *dto.ValCurs) {
+func sortData(valCurs *parser.ValCurs) {
 	sort.Slice(valCurs.Valutes, func(i, j int) bool {
 		return valCurs.Valutes[i].Value > valCurs.Valutes[j].Value
 	})
 }
 
-func writeJSON(path string, valutes []dto.Valute) error {
+func writeJSON(path string, valutes []parser.Valute) error {
 	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, dirPerm); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
