@@ -19,7 +19,7 @@ const (
 func ProcessData(inputFile, outputFile string) error {
 	valCurs, err := parser.ReadXML(inputFile)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to read XML: %w", err)
 	}
 
 	sortData(&valCurs)
