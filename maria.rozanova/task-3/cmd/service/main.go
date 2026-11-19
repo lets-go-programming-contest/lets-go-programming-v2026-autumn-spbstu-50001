@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/mrzls/task-3/internal/model"
 	"github.com/mrzls/task-3/internal/reader"
 	"github.com/mrzls/task-3/internal/settings"
 	"github.com/mrzls/task-3/internal/writer"
@@ -37,7 +36,9 @@ func run() error {
 		return fmt.Errorf("read xml: %w", err)
 	}
 
-	model.SortByValueDesc(rates)
+	if err := writer.WriteJSON(cfg.OutputFile, rates); err != nil {
+		return fmt.Errorf("write json: %w", err)
+	}
 
-	return fmt.Errorf("write json: %w", writer.WriteJSON(cfg.OutputFile, rates))
+	return nil
 }
