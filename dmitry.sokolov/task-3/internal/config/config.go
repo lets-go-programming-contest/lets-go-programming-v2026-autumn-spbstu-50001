@@ -15,7 +15,6 @@ import (
 var (
 	ErrEmptyIOFiles   = errors.New("input-file and output-file must not be empty")
 	ErrEmptyValueList = errors.New("empty Valute list")
-	ErrInvalidFields  = errors.New("invalid Valute fields")
 )
 
 type IOFiles struct {
@@ -54,12 +53,6 @@ func ReadValCurs(inFile io.Reader) (valute.ValCurs, error) {
 
 	if len(valCurs.Valutes) == 0 {
 		return valCurs, fmt.Errorf("ReadValCurs: %w", ErrEmptyValueList)
-	}
-
-	for i, v := range valCurs.Valutes {
-		if v.NumCode <= 0 || strings.TrimSpace(v.CharCode) == "" || v.Value < 0 {
-			return valCurs, fmt.Errorf("ReadValCurs: %w at index %d", ErrInvalidFields, i)
-		}
 	}
 
 	return valCurs, nil

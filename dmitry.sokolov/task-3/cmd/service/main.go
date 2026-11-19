@@ -40,50 +40,54 @@ func main() {
 	}
 }
 
-func openAndReadIOFiles(filename string) (inOutFiles config.IOFiles, err error) {
+func openAndReadIOFiles(filename string) (config.IOFiles, error) {
+	var inOutFiles config.IOFiles
+
 	data, err := os.Open(filename)
 	if err != nil {
 		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", err)
 	}
 
-	defer func() {
-		if closeErr := data.Close(); closeErr != nil && err == nil {
-			err = fmt.Errorf("openAndReadIOFiles: close file: %w", closeErr)
-		}
-	}()
+	inOutFiles, readErr := config.GetIOFiles(data)
 
-	inOutFiles, err = config.GetIOFiles(data)
-	if err != nil {
-		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", err)
+	closeErr := data.Close()
+	if closeErr != nil && readErr == nil {
+		return inOutFiles, fmt.Errorf("openAndReadIOFiles: close file: %w", closeErr)
+	}
+
+	if readErr != nil {
+		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", readErr)
 	}
 
 	return inOutFiles, nil
 }
 
-func openAndReadValCurs(filename string) (valCurs valute.ValCurs, err error) {
+func openAndReadValCurs(filename string) (valute.ValCurs, error) {
+	var valCurs valute.ValCurs
+
 	inFile, err := os.Open(filename)
 	if err != nil {
 		return valCurs, fmt.Errorf("openAndReadValCurs: %w", err)
 	}
 
-	defer func() {
-		if closeErr := inFile.Close(); closeErr != nil && err == nil {
-			err = fmt.Errorf("openAndReadValCurs: close file: %w", closeErr)
-		}
-	}()
+	valCurs, readErr := config.ReadValCurs(inFile)
 
-	valCurs, err = config.ReadValCurs(inFile)
-	if err != nil {
-		return valCurs, fmt.Errorf("openAndReadValCurs: %w", err)
+	closeErr := inFile.Close()
+	if closeErr != nil && readErr == nil {
+		return valCurs, fmt.Errorf("openAndReadValCurs: close file: %w", closeErr)
+	}
+
+	if readErr != nil {
+		return valCurs, fmt.Errorf("openAndReadValCurs: %w", readErr)
 	}
 
 	return valCurs, nil
 }
 
-func writeValCurs(filename string, valCurs *valute.ValCurs) (err error) {
+func writeValCurs(filename string, valCurs *valute.ValCurs) error {
 	dir := filepath.Dir(filename)
 
-	err = os.MkdirAll(dir, dirPerm)
+	err := os.MkdirAll(dir, dirPerm)
 	if err != nil {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
@@ -93,19 +97,19 @@ func writeValCurs(filename string, valCurs *valute.ValCurs) (err error) {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
 
-	defer func() {
-		if closeErr := outFile.Close(); closeErr != nil && err == nil {
-			err = fmt.Errorf("writeValCurs: close file: %w", closeErr)
-		}
-	}()
-
 	encoder := json.NewEncoder(outFile)
 	encoder.SetIndent("", "    ")
 
-	err = encoder.Encode(valCurs.Valutes)
-	if err != nil {
-		return fmt.Errorf("writeValCurs: %w", err)
+	encodeErr := encoder.Encode(valCurs.Valutes)
+
+	closeErr := outFile.Close()
+	if closeErr != nil && encodeErr == nil {
+		return fmt.Errorf("writeValCurs: close file: %w", closeErr)
 	}
 
-	return err
+	if encodeErr != nil {
+		return fmt.Errorf("writeValCurs: %w", encodeErr)
+	}
+
+	return nil
 }
