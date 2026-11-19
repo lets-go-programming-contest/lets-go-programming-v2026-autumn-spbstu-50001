@@ -10,9 +10,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/kirillkirsanov2007/task-3/internal/dto"
-
 	"golang.org/x/text/encoding/charmap"
+
+	"github.com/kirillkirsanov2007/task-3/internal/dto"
 )
 
 const (
