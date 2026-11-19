@@ -11,9 +11,9 @@ import (
 
 const outputDirectoryPermission = 0o755
 
-func closeFile(file *os.File) {
-	if err := file.Close(); err != nil {
-		panic(fmt.Errorf("close file %q: %w", file.Name(), err))
+func panicIfErr(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -23,7 +23,9 @@ func LoadCurrenciesFromFile(path string) ([]currency.Currency, error) {
 		return nil, fmt.Errorf("open input file %q: %w", path, err)
 	}
 
-	defer closeFile(file)
+	defer func() {
+		panicIfErr(file.Close())
+	}()
 
 	currencies, err := currency.DecodeXML(file)
 	if err != nil {
@@ -43,7 +45,9 @@ func SaveToFile(path string, writeFunction func(io.Writer) error) error {
 		return fmt.Errorf("create output file %q: %w", path, err)
 	}
 
-	defer closeFile(file)
+	defer func() {
+		panicIfErr(file.Close())
+	}()
 
 	return writeFunction(file)
 }

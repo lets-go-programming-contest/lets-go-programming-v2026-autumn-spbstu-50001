@@ -38,35 +38,10 @@ func (cf *commaFloat) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error
 	return nil
 }
 
-type optionalInt int
-
-func (oi *optionalInt) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var raw string
-	if err := d.DecodeElement(&raw, &start); err != nil {
-		return fmt.Errorf("decode int element: %w", err)
-	}
-
-	trimmed := strings.TrimSpace(raw)
-	if trimmed == "" {
-		*oi = 0
-
-		return nil
-	}
-
-	val, err := strconv.Atoi(trimmed)
-	if err != nil {
-		return fmt.Errorf("parse int value %q: %w", raw, err)
-	}
-
-	*oi = optionalInt(val)
-
-	return nil
-}
-
 type Currency struct {
-	NumCode  optionalInt `json:"num_code"  xml:"NumCode"`
-	CharCode string      `json:"char_code" xml:"CharCode"`
-	Value    commaFloat  `json:"value"     xml:"Value"`
+	NumCode  int        `json:"num_code"  xml:"NumCode"`
+	CharCode string     `json:"char_code" xml:"CharCode"`
+	Value    commaFloat `json:"value"     xml:"Value"`
 }
 
 type valCurs struct {
