@@ -1,17 +1,35 @@
 package storage
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
+const (
+	directoryPermissions = 0o755
+	filePermissions      = 0o600
+)
+
 func Read(path string) ([]byte, error) {
-	return os.ReadFile(path)
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("read file %q: %w", path, err)
+	}
+
+	return data, nil
 }
 
 func Write(path string, data []byte) error {
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		return err
+	dir := filepath.Dir(path)
+
+	if err := os.MkdirAll(dir, directoryPermissions); err != nil {
+		return fmt.Errorf("create directory %q: %w", dir, err)
 	}
-	return os.WriteFile(path, data, 0o644)
+
+	if err := os.WriteFile(path, data, filePermissions); err != nil {
+		return fmt.Errorf("write file %q: %w", path, err)
+	}
+
+	return nil
 }

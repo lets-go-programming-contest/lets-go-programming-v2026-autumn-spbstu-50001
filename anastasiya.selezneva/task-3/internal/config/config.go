@@ -3,10 +3,16 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/seleznao/task-3/internal/storage"
+)
+
+var (
+	errConfigRequired = errors.New("flag -config is required")
+	errEmptyPaths     = errors.New("input-file and output-file must be set")
 )
 
 type Config struct {
@@ -16,25 +22,31 @@ type Config struct {
 
 func Parse(args []string) (Config, error) {
 	flags := flag.NewFlagSet("service", flag.ContinueOnError)
+
 	path := flags.String("config", "", "path to the YAML config file")
+
 	if err := flags.Parse(args); err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("parse flags: %w", err)
 	}
+
 	if *path == "" {
-		return Config{}, errors.New("flag -config is required")
+		return Config{}, errConfigRequired
 	}
 
 	data, err := storage.Read(*path)
 	if err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("read config file: %w", err)
 	}
 
 	var cfg Config
+
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return Config{}, err
+		return Config{}, fmt.Errorf("parse YAML config: %w", err)
 	}
+
 	if cfg.InputFile == "" || cfg.OutputFile == "" {
-		return Config{}, errors.New("input-file and output-file must be set")
+		return Config{}, errEmptyPaths
 	}
+
 	return cfg, nil
 }
