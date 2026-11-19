@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -9,6 +10,12 @@ import (
 	"github.com/dmitrys6/task-3/internal/valute"
 	"golang.org/x/net/html/charset"
 	"gopkg.in/yaml.v3"
+)
+
+var (
+	ErrEmptyIOFiles   = errors.New("input-file and output-file must not be empty")
+	ErrEmptyValueList = errors.New("empty Valute list")
+	ErrInvalidFields  = errors.New("invalid Valute fields")
 )
 
 type IOFiles struct {
@@ -28,7 +35,7 @@ func GetIOFiles(configFile io.Reader) (IOFiles, error) {
 	}
 
 	if strings.TrimSpace(inOutFiles.InFile) == "" || strings.TrimSpace(inOutFiles.OutFile) == "" {
-		return inOutFiles, fmt.Errorf("GetIOFiles: input-file and output-file must not be empty")
+		return inOutFiles, fmt.Errorf("GetIOFiles: %w", ErrEmptyIOFiles)
 	}
 
 	return inOutFiles, nil
@@ -38,21 +45,22 @@ func ReadValCurs(inFile io.Reader) (valute.ValCurs, error) {
 	decoder := xml.NewDecoder(inFile)
 	decoder.CharsetReader = charset.NewReaderLabel
 
-	var vc valute.ValCurs
-	err := decoder.Decode(&vc)
+	var valCurs valute.ValCurs
+	err := decoder.Decode(&valCurs)
+
 	if err != nil {
-		return vc, fmt.Errorf("ReadValCurs: %w", err)
+		return valCurs, fmt.Errorf("ReadValCurs: %w", err)
 	}
 
-	if len(vc.Valutes) == 0 {
-		return vc, fmt.Errorf("ReadValCurs: empty Valute list")
+	if len(valCurs.Valutes) == 0 {
+		return valCurs, fmt.Errorf("ReadValCurs: %w", ErrEmptyValueList)
 	}
 
-	for i, v := range vc.Valutes {
-		if strings.TrimSpace(v.NumCode) == "" || strings.TrimSpace(v.CharCode) == "" || v.Value <= 0 {
-			return vc, fmt.Errorf("ReadValCurs: invalid Valute fields at index %d", i)
+	for i, v := range valCurs.Valutes {
+		if v.NumCode <= 0 || strings.TrimSpace(v.CharCode) == "" || v.Value <= 0 {
+			return valCurs, fmt.Errorf("ReadValCurs: %w at index %d", ErrInvalidFields, i)
 		}
 	}
 
-	return vc, nil
+	return valCurs, nil
 }

@@ -45,27 +45,33 @@ func openAndReadIOFiles(filename string) (config.IOFiles, error) {
 	if err != nil {
 		return inOutFiles, fmt.Errorf("openAndReadIOFiles: %w", err)
 	}
+
 	defer data.Close()
 
 	inOutFiles, err = config.GetIOFiles(data)
+
 	return inOutFiles, err
 }
 
 func openAndReadValCurs(filename string) (valute.ValCurs, error) {
 	var valCurs valute.ValCurs
+
 	inFile, err := os.Open(filename)
 	if err != nil {
 		return valCurs, fmt.Errorf("openAndReadValCurs: %w", err)
 	}
+
 	defer inFile.Close()
 
 	valCurs, err = config.ReadValCurs(inFile)
+
 	return valCurs, err
 }
 
 func writeValCurs(filename string, valCurs *valute.ValCurs) error {
 	dir := filepath.Dir(filename)
-	err := os.MkdirAll(dir, 0755)
+	err := os.MkdirAll(dir, 0o755)
+
 	if err != nil {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
@@ -74,6 +80,7 @@ func writeValCurs(filename string, valCurs *valute.ValCurs) error {
 	if err != nil {
 		return fmt.Errorf("writeValCurs: %w", err)
 	}
+
 	defer func() {
 		if closeErr := outFile.Close(); closeErr != nil && err == nil {
 			err = fmt.Errorf("writeValCurs: close file: %w", closeErr)
