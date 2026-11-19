@@ -6,7 +6,9 @@ import (
 	"io"
 	"os"
 	"strings"
+
 	"golang.org/x/text/encoding/charmap"
+
 	"github.com/kirillkirsanov2007/task-3/internal/dto"
 )
 
