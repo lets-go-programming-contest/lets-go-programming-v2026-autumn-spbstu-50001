@@ -5,9 +5,8 @@ import (
 	"flag"
 	"fmt"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/seleznao/task-3/internal/storage"
+	"gopkg.in/yaml.v3"
 )
 
 var (
