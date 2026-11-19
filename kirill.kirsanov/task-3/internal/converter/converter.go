@@ -8,8 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
+
+	"github.com/kirillkirsanov2007/task-3/internal/dto"
 
 	"golang.org/x/text/encoding/charmap"
 )
@@ -19,44 +20,28 @@ const (
 	dirPerm  = 0o755
 )
 
-type FloatValue float64
-
-func (f *FloatValue) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
-	var stringValue string
-	if err := d.DecodeElement(&stringValue, &start); err != nil {
-		return fmt.Errorf("failed to decode XML element: %w", err)
-	}
-
-	stringValue = strings.ReplaceAll(stringValue, ",", ".")
-
-	val, err := strconv.ParseFloat(stringValue, 64)
+func ProcessData(inputFile, outputFile string) error {
+	valCurs, err := readXML(inputFile)
 	if err != nil {
-		return fmt.Errorf("failed to parse float: %w", err)
+		return err
 	}
 
-	*f = FloatValue(val)
+	sortData(&valCurs)
+
+	if err := writeJSON(outputFile, valCurs.Valutes); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-type ValCurs struct {
-	XMLName xml.Name `xml:"ValCurs"`
-	Valutes []Valute `xml:"Valute"`
-}
+func readXML(path string) (dto.ValCurs, error) {
+	var valCurs dto.ValCurs
 
-type Valute struct {
-	NumCode  int        `json:"num_code"  xml:"NumCode"`
-	CharCode string     `json:"char_code" xml:"CharCode"`
-	Value    FloatValue `json:"value"     xml:"Value"`
-}
-
-func ProcessData(inputFile, outputFile string) error {
-	data, err := os.ReadFile(inputFile)
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to read input file: %w", err)
+		return valCurs, fmt.Errorf("failed to read input file: %w", err)
 	}
-
-	var valCurs ValCurs
 
 	decoder := xml.NewDecoder(strings.NewReader(string(data)))
 	decoder.CharsetReader = func(charset string, input io.Reader) (io.Reader, error) {
@@ -68,27 +53,30 @@ func ProcessData(inputFile, outputFile string) error {
 	}
 
 	if err := decoder.Decode(&valCurs); err != nil {
-		return fmt.Errorf("failed to decode XML: %w", err)
+		return valCurs, fmt.Errorf("failed to decode XML: %w", err)
 	}
 
+	return valCurs, nil
+}
+
+func sortData(valCurs *dto.ValCurs) {
 	sort.Slice(valCurs.Valutes, func(i, j int) bool {
 		return valCurs.Valutes[i].Value > valCurs.Valutes[j].Value
 	})
+}
 
-	output := make([]Valute, 0, len(valCurs.Valutes))
-	output = append(output, valCurs.Valutes...)
-
-	dir := filepath.Dir(outputFile)
+func writeJSON(path string, valutes []dto.Valute) error {
+	dir := filepath.Dir(path)
 	if err := os.MkdirAll(dir, dirPerm); err != nil {
 		return fmt.Errorf("failed to create directory: %w", err)
 	}
 
-	jsonData, err := json.MarshalIndent(output, "", "    ")
+	jsonData, err := json.MarshalIndent(valutes, "", "    ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 
-	if err := os.WriteFile(outputFile, jsonData, filePerm); err != nil {
+	if err := os.WriteFile(path, jsonData, filePerm); err != nil {
 		return fmt.Errorf("failed to write output file: %w", err)
 	}
 
