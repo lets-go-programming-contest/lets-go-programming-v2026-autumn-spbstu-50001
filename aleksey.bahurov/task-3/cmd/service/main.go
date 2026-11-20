@@ -3,11 +3,11 @@ package main
 import (
 	"errors"
 	"flag"
-	"io"
 
 	"github.com/Alehandro-de-bah/task-3/internal/config"
 	"github.com/Alehandro-de-bah/task-3/internal/currency"
-	"github.com/Alehandro-de-bah/task-3/internal/storage"
+	"github.com/Alehandro-de-bah/task-3/internal/reader"
+	"github.com/Alehandro-de-bah/task-3/internal/writer"
 )
 
 const (
@@ -23,21 +23,23 @@ func main() {
 		panic(err)
 	}
 
-	cfg, err := config.Load(configPath)
+	cfg, err := reader.FromYAMLFile[config.Config](configPath)
 	if err != nil {
 		panic(err)
 	}
 
-	currencies, err := storage.LoadCurrenciesFromFile(cfg.InputFile)
+	if err := cfg.Validate(); err != nil {
+		panic(err)
+	}
+
+	rates, err := reader.FromXMLFile[currency.ValCurs](cfg.InputFile)
 	if err != nil {
 		panic(err)
 	}
 
-	currency.SortByValueDescending(currencies)
+	currency.SortByValueDescending(rates.Valutes)
 
-	if err := storage.SaveToFile(cfg.OutputFile, func(w io.Writer) error {
-		return currency.EncodeJSON(w, currencies)
-	}); err != nil {
+	if err := writer.ToJSONFile(cfg.OutputFile, rates.Valutes); err != nil {
 		panic(err)
 	}
 }
