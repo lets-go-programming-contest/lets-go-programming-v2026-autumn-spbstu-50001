@@ -4,13 +4,12 @@ import (
 	"container/heap"
 	"errors"
 	"fmt"
-
-	"github.com/Alehandro-de-bah/task-2-2/internal/myheap"
 )
 
 var (
-	errEmptyHeap      = errors.New("heap is empty")
-	errUnexpectedType = errors.New("unexpected type in heap")
+	errEmptyHeap       = errors.New("heap is empty")
+	errUnexpectedType  = errors.New("unexpected type in heap")
+	errIndexOutOfRange = errors.New("index out of range")
 )
 
 type rawHeap []int
@@ -28,7 +27,9 @@ func (h *rawHeap) Swap(i, j int) {
 }
 
 func (h *rawHeap) Push(x any) {
-	*h = append(*h, x.(int))
+	if val, ok := x.(int); ok {
+		*h = append(*h, val)
+	}
 }
 
 func (h *rawHeap) Pop() any {
@@ -44,9 +45,10 @@ type minHeap struct {
 	data *rawHeap
 }
 
-func NewMinHeap() myheap.MyHeap {
+func NewMinHeap() *minHeap {
 	h := &rawHeap{}
 	heap.Init(h)
+
 	return &minHeap{data: h}
 }
 
@@ -81,7 +83,7 @@ func (m *minHeap) Peek() (int, error) {
 
 func (m *minHeap) checkBounds(i, j int) error {
 	if i < 0 || i >= m.Len() || j < 0 || j >= m.Len() {
-		return fmt.Errorf("index out of range [%d, %d] with length %d", i, j, m.Len())
+		return errIndexOutOfRange
 	}
 
 	return nil
