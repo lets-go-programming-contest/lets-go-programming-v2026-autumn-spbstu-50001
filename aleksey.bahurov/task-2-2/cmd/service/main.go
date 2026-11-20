@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/heap"
 	"errors"
 	"fmt"
 
@@ -9,9 +8,9 @@ import (
 )
 
 var (
-	ErrDishesOutOfRange     = errors.New("number of dishes must be in range [1, 10000]")
-	ErrRatingOutOfRange     = errors.New("rating of dish must be in range [-10000, 10000]")
-	ErrPreferenceOutOfRange = errors.New("preference number must be in range [1, dishesNumber]")
+	errDishesOutOfRange     = errors.New("number of dishes must be in range [1, 10000]")
+	errRatingOutOfRange     = errors.New("rating of dish must be in range [-10000, 10000]")
+	errPreferenceOutOfRange = errors.New("preference number must be in range [1, dishesNumber]")
 )
 
 const (
@@ -29,7 +28,7 @@ func readDishesNumber() (int, error) {
 	}
 
 	if dishesNumber < minDishesNumber || dishesNumber > maxDishesNumber {
-		return 0, ErrDishesOutOfRange
+		return 0, errDishesOutOfRange
 	}
 
 	return dishesNumber, nil
@@ -44,7 +43,7 @@ func readRatings(dishesNumber int) ([]int, error) {
 		}
 
 		if rating[index] < minDishesRating || rating[index] > maxDishesRating {
-			return nil, ErrRatingOutOfRange
+			return nil, errRatingOutOfRange
 		}
 	}
 
@@ -58,7 +57,7 @@ func readPreferenceNumber(dishesNumber int) (int, error) {
 	}
 
 	if preferenceNumber < minPreferenceNumber || preferenceNumber > dishesNumber {
-		return 0, ErrPreferenceOutOfRange
+		return 0, errPreferenceOutOfRange
 	}
 
 	return preferenceNumber, nil
@@ -86,22 +85,26 @@ func main() {
 		return
 	}
 
-	dishHeap := &minheap.MinHeap{}
-	heap.Init(dishHeap)
+	dishHeap := minheap.NewMinHeap()
 
 	for _, value := range rating {
-		heap.Push(dishHeap, value)
+		dishHeap.Push(value)
 
 		if dishHeap.Len() > preferenceNumber {
-			heap.Pop(dishHeap)
+			if _, err := dishHeap.Pop(); err != nil {
+				fmt.Printf("Error: %s\n", err.Error())
+
+				return
+			}
 		}
 	}
 
-	if dishHeap.Len() == 0 {
-		fmt.Println("dishHeap is empty!")
+	result, err := dishHeap.Peek()
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
 
 		return
 	}
 
-	fmt.Println((*dishHeap)[0])
+	fmt.Println(result)
 }
