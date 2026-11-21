@@ -64,18 +64,18 @@ func readPreferenceNumber(dishesNumber int) (int, error) {
 	return preferenceNumber, nil
 }
 
-func findKthLargest(h myheap.MyHeap, ratings []int, k int) (int, error) {
+func findKthLargest(heap myheap.MyHeap, ratings []int, k int) (int, error) {
 	for _, value := range ratings {
-		h.Push(value)
+		heap.Push(value)
 
-		if h.Len() > k {
-			if _, err := h.Pop(); err != nil {
+		if heap.Len() > k {
+			if _, err := heap.Pop(); err != nil {
 				return 0, fmt.Errorf("failed to pop from heap: %w", err)
 			}
 		}
 	}
 
-	result, err := h.Peek()
+	result, err := heap.Peek()
 	if err != nil {
 		return 0, fmt.Errorf("failed to peek from heap: %w", err)
 	}
