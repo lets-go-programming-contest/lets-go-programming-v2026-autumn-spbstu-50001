@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/Alehandro-de-bah/task-2-2/internal/minheap"
+	"github.com/Alehandro-de-bah/task-2-2/internal/myheap"
 )
 
 var (
@@ -63,6 +64,25 @@ func readPreferenceNumber(dishesNumber int) (int, error) {
 	return preferenceNumber, nil
 }
 
+func findKthLargest(h myheap.MyHeap, ratings []int, k int) (int, error) {
+	for _, value := range ratings {
+		h.Push(value)
+
+		if h.Len() > k {
+			if _, err := h.Pop(); err != nil {
+				return 0, fmt.Errorf("failed to pop from heap: %w", err)
+			}
+		}
+	}
+
+	result, err := h.Peek()
+	if err != nil {
+		return 0, fmt.Errorf("failed to peek from heap: %w", err)
+	}
+
+	return result, nil
+}
+
 func main() {
 	dishesNumber, err := readDishesNumber()
 	if err != nil {
@@ -85,21 +105,7 @@ func main() {
 		return
 	}
 
-	dishHeap := minheap.NewMinHeap()
-
-	for _, value := range rating {
-		dishHeap.Push(value)
-
-		if dishHeap.Len() > preferenceNumber {
-			if _, err := dishHeap.Pop(); err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
-
-				return
-			}
-		}
-	}
-
-	result, err := dishHeap.Peek()
+	result, err := findKthLargest(minheap.NewMinHeap(), rating, preferenceNumber)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 
