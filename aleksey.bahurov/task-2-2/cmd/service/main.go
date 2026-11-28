@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/Alehandro-de-bah/task-2-2/internal/minheap"
-	"github.com/Alehandro-de-bah/task-2-2/internal/myheap"
 )
 
 var (
@@ -21,6 +20,13 @@ const (
 	maxDishesRating     = 10000
 	minPreferenceNumber = 1
 )
+
+type myHeap interface {
+	Push(value int)
+	Pop() (int, error)
+	Peek() (int, error)
+	Len() int
+}
 
 func readDishesNumber() (int, error) {
 	var dishesNumber int
@@ -64,7 +70,7 @@ func readPreferenceNumber(dishesNumber int) (int, error) {
 	return preferenceNumber, nil
 }
 
-func findKthLargest(heap myheap.MyHeap, ratings []int, k int) (int, error) {
+func findKthLargest(heap myHeap, ratings []int, k int) (int, error) {
 	for _, value := range ratings {
 		heap.Push(value)
 

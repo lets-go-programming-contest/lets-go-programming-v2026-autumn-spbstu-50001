@@ -7,9 +7,8 @@ import (
 )
 
 var (
-	errEmptyHeap       = errors.New("heap is empty")
-	errUnexpectedType  = errors.New("unexpected type in heap")
-	errIndexOutOfRange = errors.New("index out of range")
+	errEmptyHeap      = errors.New("heap is empty")
+	errUnexpectedType = errors.New("unexpected type in heap")
 )
 
 type rawHeap []int
@@ -27,9 +26,12 @@ func (h *rawHeap) Swap(i, j int) {
 }
 
 func (h *rawHeap) Push(x any) {
-	if val, ok := x.(int); ok {
-		*h = append(*h, val)
+	val, ok := x.(int)
+	if !ok {
+		panic(fmt.Sprintf("expected int, got %T", x))
 	}
+
+	*h = append(*h, val)
 }
 
 func (h *rawHeap) Pop() any {
@@ -79,30 +81,4 @@ func (m *minHeap) Peek() (int, error) {
 	}
 
 	return (*m.data)[0], nil
-}
-
-func (m *minHeap) checkBounds(i, j int) error {
-	if i < 0 || i >= m.Len() || j < 0 || j >= m.Len() {
-		return errIndexOutOfRange
-	}
-
-	return nil
-}
-
-func (m *minHeap) Less(i, j int) (bool, error) {
-	if err := m.checkBounds(i, j); err != nil {
-		return false, fmt.Errorf("minheap.Less: %w", err)
-	}
-
-	return m.data.Less(i, j), nil
-}
-
-func (m *minHeap) Swap(i, j int) error {
-	if err := m.checkBounds(i, j); err != nil {
-		return fmt.Errorf("minheap.Swap: %w", err)
-	}
-
-	m.data.Swap(i, j)
-
-	return nil
 }
